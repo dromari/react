@@ -1,0 +1,45 @@
+.resultsArea {
+  background-color: #9bcc9b;  
+  border: 8px solid #333; 
+  border-radius: 5px;
+  min-height: 300px;
+  font-family: 'Courier New', Courier, monospace;
+  color: #222;
+  overflow: hidden; 
+}
+
+.tableHeader {
+  display: flex;
+  border-bottom: 3px solid #333; 
+  background: rgba(0, 0, 0, 0.15); 
+  text-transform: uppercase;
+}
+
+.tableRow {
+  display: flex;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  transition: background 0.2s;
+}
+
+.tableRow:hover {
+  background: rgba(0, 0, 0, 0.05); 
+}
+
+.cell {
+  flex: 1;
+  padding: 12px 15px;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+}
+
+.cell:last-child {
+  border-right: none;
+}
+
+.noResults {
+  padding: 40px;
+  text-align: center;
+  font-style: italic;
+  opacity: 0.7;
+}
