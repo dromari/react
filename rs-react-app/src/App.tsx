@@ -4,7 +4,22 @@ import ResultsContainer from './components/ResultsContainer/ResultsContainer';
 import styles from './App.module.css';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 
-class App extends Component {
+interface AppState {
+  searchTerm: string;
+}
+
+class App extends Component<object, AppState> {
+  constructor(props: object) {
+    super(props);
+    const savedTerm = localStorage.getItem('pokeSearch') || '';
+    this.state = {
+      searchTerm: savedTerm,
+    };
+  }
+  handleSearch = (term: string) => {
+    this.setState({ searchTerm: term });
+    localStorage.setItem('pokeSearch', term);
+  };
   render() {
     return (
       <div className={styles.mainWrapper}>
@@ -21,9 +36,9 @@ class App extends Component {
         <h1 className={styles.title}>Pokédex v1.0</h1>
 
         <div className={styles.screenInner}>
-          <SearchBar />
+          <SearchBar onSearch={this.handleSearch} />
           <ErrorBoundary>
-            <ResultsContainer />
+            <ResultsContainer searchTerm={this.state.searchTerm} />
           </ErrorBoundary>
         </div>
       </div>

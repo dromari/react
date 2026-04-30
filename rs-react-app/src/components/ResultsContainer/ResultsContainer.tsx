@@ -1,23 +1,88 @@
 import { Component } from 'react';
+import { fetchDetailedPokemons, PokemonListItem } from '../../services/api';
 import styles from './Results.module.css';
 
-class Results extends Component {
+interface Props {
+  searchTerm: string;
+}
+
+interface State {
+  pokemons: PokemonListItem[];
+  isLoading: boolean;
+}
+
+class ResultsContainer extends Component<Props, State> {
+  state: State = {
+    pokemons: [],
+    isLoading: false,
+  };
+
+  componentDidMount() {
+    this.loadData();
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (this.props.searchTerm !== prevProps.searchTerm) {
+      this.loadData();
+    }
+  }
+
+  loadData = async () => {
+    this.setState({ isLoading: true });
+    try {
+      const data = await fetchDetailedPokemons(this.props.searchTerm);
+      this.setState({ pokemons: data, isLoading: false });
+    } catch (error) {
+      console.error(error);
+      this.setState({ pokemons: [], isLoading: false });
+    }
+  };
+
   render() {
+    const { pokemons, isLoading } = this.state;
+
     return (
       <div className={styles.resultsArea}>
         <div className={styles.tableHeader}>
-          <div className={styles.cell}>Item Name</div>
-          <div className={styles.cell}>Status/Type</div>
+          <div className={styles.cellName}>NAME</div>
+          <div className={styles.cellImage}>ICON</div>
+          <div className={styles.cellData}>POKEDEX DATA</div>
         </div>
+
         <div className={styles.resultsBody}>
-          <div className={styles.tableRow}>
-            <div className={styles.cell}>Pikachu</div>
-            <div className={styles.cell}>Electric</div>
-          </div>
+          {isLoading ? (
+            <div className={styles.scanning}>SYSTEM SCANNING...</div>
+          ) : pokemons && pokemons.length > 0 ? (
+            pokemons.map((pokemon) => (
+              <div key={pokemon.name} className={styles.tableRow}>
+                <div className={styles.cellName}>
+                  <strong>{pokemon.name}</strong>
+                </div>
+                <div className={styles.cellImage}>
+                  {pokemon.image ? (
+                    <img
+                      src={pokemon.image}
+                      alt={pokemon.name}
+                      className={styles.pokemonSprite}
+                    />
+                  ) : (
+                    <div className={styles.noImage}>?</div>
+                  )}
+                </div>
+                <div className={styles.cellData}>
+                  <span className={styles.descriptionText}>
+                    {pokemon.description}
+                  </span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className={styles.noData}>NO DATA FOUND IN DATABASE</div>
+          )}
         </div>
       </div>
     );
   }
 }
 
-export default Results;
+export default ResultsContainer;

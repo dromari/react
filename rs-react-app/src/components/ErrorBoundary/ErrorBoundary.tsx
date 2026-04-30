@@ -16,7 +16,6 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   static getDerivedStateFromError(): State {
-    // Обновляем состояние, чтобы следующий рендер показал запасной UI
     return { hasError: true };
   }
 
