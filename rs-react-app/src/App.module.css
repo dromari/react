@@ -11,10 +11,12 @@
 }
 
 .title {
+  position: absolute;
+  right: 50px;
   margin-left: 80px;
   margin-top: 0;
   font-family: 'Arial', sans-serif;
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: #000;
 }
 
@@ -44,22 +46,22 @@
 .greenLight {
   background: #00ff00;
 }
+
 .errorButton {
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
   position: absolute;
   top: 15px;
   left: 15px;
-
   width: 60px;
   height: 60px;
-
   background: radial-gradient(circle at 30% 30%, #5fbff9, #1089ff);
   border: 5px solid #ffffff;
   border-radius: 50%;
-
   box-shadow:
     0 4px 10px rgba(0, 0, 0, 0.4),
     inset -4px -4px 8px rgba(0, 0, 0, 0.2);
-
   cursor: pointer;
   transition: all 0.2s ease;
   z-index: 10;
@@ -82,4 +84,8 @@
   background: rgba(255, 255, 255, 0.6);
   border-radius: 50%;
   transform: rotate(-45deg);
+}
+
+.screenInner {
+  margin-top: 5rem;
 }
