@@ -47,12 +47,13 @@ export const fetchDetailedPokemons = async (
   try {
     const response = await fetch(url);
 
-    if (response.status === 404) return [];
-
     if (!response.ok) {
       return {
         isError: true,
-        message: response.statusText || 'Bad Request',
+        message:
+          response.status === 404
+            ? 'Pokemon not found in database'
+            : response.statusText || 'Bad Request',
         status: response.status,
       };
     }

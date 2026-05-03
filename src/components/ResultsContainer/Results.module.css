@@ -55,11 +55,13 @@
   font-weight: bold;
 }
 
-.noResults {
+.errorBanner {
   padding: 40px;
   text-align: center;
   font-style: italic;
+  font-weight: bold;
   opacity: 0.7;
+  color: #000;
 }
 
 .scanning {

@@ -69,7 +69,7 @@ class ResultsContainer extends Component<Props, State> {
           <div className={styles.cellData}>POKEDEX DATA</div>
         </div>
 
-        <div className={styles.resultsBody}>
+        <div>
           {isLoading && (
             <div className={styles.scanning}>SYSTEM SCANNING...</div>
           )}
@@ -83,7 +83,7 @@ class ResultsContainer extends Component<Props, State> {
           )}
 
           {!isLoading && !errorMessage && pokemons.length === 0 && (
-            <div className={styles.noData}>
+            <div className={styles.errorBanner}>
               <h3>🔍 NO DATA FOUND</h3>
               <p>
                 The Pokemon you are looking for does not exist in our database.

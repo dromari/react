@@ -1,8 +1,9 @@
-import { Component, ChangeEvent } from 'react';
+import { Component, ChangeEvent, KeyboardEvent } from 'react';
 import styles from './SearchBar.module.css';
 
 interface Props {
   onSearch: (term: string) => void;
+  initialValue: string;
 }
 
 interface State {
@@ -10,14 +11,9 @@ interface State {
 }
 
 class SearchBar extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-
-    const savedTerm = localStorage.getItem('pokeSearch') || '';
-    this.state = {
-      inputValue: savedTerm,
-    };
-  }
+  state: State = {
+    inputValue: this.props.initialValue,
+  };
 
   handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({ inputValue: e.target.value });
@@ -26,6 +22,13 @@ class SearchBar extends Component<Props, State> {
   handleBtnClick = () => {
     this.props.onSearch(this.state.inputValue.trim());
   };
+
+  handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      this.handleBtnClick();
+    }
+  };
+
   render() {
     return (
       <div className={styles.topControls}>
@@ -34,6 +37,7 @@ class SearchBar extends Component<Props, State> {
           className={styles.searchInput}
           value={this.state.inputValue}
           onChange={this.handleInputChange}
+          onKeyDown={this.handleKeyDown}
           placeholder="Search Pokemon..."
         />
         <button className={styles.searchButton} onClick={this.handleBtnClick}>

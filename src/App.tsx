@@ -31,7 +31,6 @@ class App extends Component<object, AppState> {
     if (this.state.shouldThrowError) {
       throw new Error('Test Error');
     }
-
     return (
       <div className={styles.mainWrapper}>
         <button
@@ -51,7 +50,10 @@ class App extends Component<object, AppState> {
         <h1 className={styles.title}>Pokédex v1.0</h1>
 
         <div className={styles.screenInner}>
-          <SearchBar onSearch={this.handleSearch} />
+          <SearchBar
+            onSearch={this.handleSearch}
+            initialValue={this.state.searchTerm}
+          />
           <ResultsContainer searchTerm={this.state.searchTerm} />
         </div>
       </div>
