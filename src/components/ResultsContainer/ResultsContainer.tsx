@@ -9,12 +9,14 @@ interface Props {
 interface State {
   pokemons: PokemonListItem[];
   isLoading: boolean;
+  errorMessage: string | null;
 }
 
 class ResultsContainer extends Component<Props, State> {
   state: State = {
     pokemons: [],
     isLoading: false,
+    errorMessage: null,
   };
 
   componentDidMount() {
@@ -28,18 +30,36 @@ class ResultsContainer extends Component<Props, State> {
   }
 
   loadData = async () => {
-    this.setState({ isLoading: true });
-    try {
-      const data = await fetchDetailedPokemons(this.props.searchTerm);
-      this.setState({ pokemons: data, isLoading: false });
-    } catch (error) {
-      console.error(error);
-      this.setState({ pokemons: [], isLoading: false });
+    this.setState({ isLoading: true, errorMessage: null });
+
+    const result = await fetchDetailedPokemons(this.props.searchTerm);
+
+    if (result && 'isError' in result) {
+      const errorText = result.status
+        ? `Error ${result.status}: ${result.message}`
+        : `System Error: ${result.message}`;
+
+      this.setState({
+        isLoading: false,
+        errorMessage: errorText,
+      });
+    } else if (result.length === 0) {
+      this.setState({
+        isLoading: false,
+        pokemons: [],
+        errorMessage: null,
+      });
+    } else {
+      this.setState({
+        pokemons: result as PokemonListItem[],
+        isLoading: false,
+        errorMessage: null,
+      });
     }
   };
 
   render() {
-    const { pokemons, isLoading } = this.state;
+    const { pokemons, isLoading, errorMessage } = this.state;
 
     return (
       <div className={styles.resultsArea}>
@@ -50,9 +70,30 @@ class ResultsContainer extends Component<Props, State> {
         </div>
 
         <div className={styles.resultsBody}>
-          {isLoading ? (
+          {isLoading && (
             <div className={styles.scanning}>SYSTEM SCANNING...</div>
-          ) : pokemons && pokemons.length > 0 ? (
+          )}
+
+          {errorMessage && !isLoading && (
+            <div className={styles.errorBanner}>
+              <h3>⚠️ DATABASE ERROR</h3>
+              <p>{errorMessage}</p>
+              <p>Please check your connection or try a different request.</p>
+            </div>
+          )}
+
+          {!isLoading && !errorMessage && pokemons.length === 0 && (
+            <div className={styles.noData}>
+              <h3>🔍 NO DATA FOUND</h3>
+              <p>
+                The Pokemon you are looking for does not exist in our database.
+              </p>
+            </div>
+          )}
+
+          {!isLoading &&
+            !errorMessage &&
+            pokemons.length > 0 &&
             pokemons.map((pokemon) => (
               <div key={pokemon.name} className={styles.tableRow}>
                 <div className={styles.cellName}>
@@ -75,10 +116,7 @@ class ResultsContainer extends Component<Props, State> {
                   </span>
                 </div>
               </div>
-            ))
-          ) : (
-            <div className={styles.noData}>NO DATA FOUND IN DATABASE</div>
-          )}
+            ))}
         </div>
       </div>
     );

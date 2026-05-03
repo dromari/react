@@ -1,4 +1,4 @@
-import { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ReactNode } from 'react';
 import styles from './ErrorBoundary.module.css';
 
 interface Props {
@@ -19,16 +19,14 @@ class ErrorBoundary extends Component<Props, State> {
     return { hasError: true };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error:', error, errorInfo);
-  }
+  componentDidCatch() {}
 
   render() {
     if (this.state.hasError) {
       return (
         <div className={styles.errorScreen}>
           <h2>SYSTEM ERROR</h2>
-          <p>Pokédex data corrupted...</p>
+          <p>Something went wrong...</p>
           <button
             className={styles.resetButton}
             onClick={() => this.setState({ hasError: false })}

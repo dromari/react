@@ -2,10 +2,10 @@ import { Component } from 'react';
 import SearchBar from './components/SearchBar/SearchBar';
 import ResultsContainer from './components/ResultsContainer/ResultsContainer';
 import styles from './App.module.css';
-import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 
 interface AppState {
   searchTerm: string;
+  shouldThrowError: boolean;
 }
 
 class App extends Component<object, AppState> {
@@ -14,17 +14,32 @@ class App extends Component<object, AppState> {
     const savedTerm = localStorage.getItem('pokeSearch') || '';
     this.state = {
       searchTerm: savedTerm,
+      shouldThrowError: false,
     };
   }
+
   handleSearch = (term: string) => {
     this.setState({ searchTerm: term });
     localStorage.setItem('pokeSearch', term);
   };
+
+  handleThrowError = () => {
+    this.setState({ shouldThrowError: true });
+  };
+
   render() {
+    if (this.state.shouldThrowError) {
+      throw new Error('Test Error');
+    }
+
     return (
       <div className={styles.mainWrapper}>
-        <button className={styles.errorButton} title="Test">
-          Test
+        <button
+          className={styles.errorButton}
+          title="Test Error"
+          onClick={this.handleThrowError}
+        >
+          TEST
         </button>
 
         <div className={styles.smallLights}>
@@ -33,13 +48,11 @@ class App extends Component<object, AppState> {
           <div className={styles.greenLight} />
         </div>
 
-        <h1 className={styles.title}>Pokédex v1.0+</h1>
+        <h1 className={styles.title}>Pokédex v1.0</h1>
 
         <div className={styles.screenInner}>
           <SearchBar onSearch={this.handleSearch} />
-          <ErrorBoundary>
-            <ResultsContainer searchTerm={this.state.searchTerm} />
-          </ErrorBoundary>
+          <ResultsContainer searchTerm={this.state.searchTerm} />
         </div>
       </div>
     );
