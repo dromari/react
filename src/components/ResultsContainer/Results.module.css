@@ -1,0 +1,90 @@
+.resultsArea {
+  background-color: #9bcc9b;
+  border: 8px solid #333;
+  border-radius: 5px;
+  min-height: 300px;
+  font-family: 'Courier New', Courier, monospace;
+  color: #222;
+  overflow: hidden;
+}
+
+.tableHeader,
+.tableRow {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.cellName {
+  flex: 1;
+  padding: 10px;
+  text-align: left;
+  font-weight: bold;
+}
+
+.cellImage {
+  width: 100px;
+  display: flex;
+  justify-content: center;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.cellData {
+  flex: 2;
+  padding: 10px;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.pokemonSprite {
+  width: 60px;
+  height: 60px;
+  image-rendering: pixelated;
+}
+
+.noImage {
+  width: 60px;
+  height: 60px;
+  background: rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+.errorBanner {
+  padding: 40px;
+  text-align: center;
+  font-style: italic;
+  font-weight: bold;
+  opacity: 0.7;
+  color: #000;
+}
+
+.scanning {
+  padding: 40px;
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 2px;
+  animation: pulse 1.5s infinite;
+}
+
+.descriptionText {
+  line-height: 1.4;
+  color: #1a2a1a;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
