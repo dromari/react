@@ -33,7 +33,7 @@ class App extends Component<object, AppState> {
           <div className={styles.greenLight} />
         </div>
 
-        <h1 className={styles.title}>Pokédex v1.0</h1>
+        <h1 className={styles.title}>Pokédex v1.0+</h1>
 
         <div className={styles.screenInner}>
           <SearchBar onSearch={this.handleSearch} />
