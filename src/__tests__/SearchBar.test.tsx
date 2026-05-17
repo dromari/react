@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import SearchBar from './SearchBar';
+import SearchBar from '../components/SearchBar/SearchBar';
 
 describe('SearchBar Component', () => {
   it('renders with initial value from props', () => {

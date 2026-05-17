@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
-import { server } from '../../__tests__/node';
-import ResultsContainer from './ResultsContainer';
-import * as api from '../../services/api';
+import { server } from './node';
+import ResultsContainer from '../components/ResultsContainer/ResultsContainer';
+import * as api from '../services/api';
 
 describe('ResultsContainer Component', () => {
   afterEach(() => {
