@@ -2,7 +2,7 @@ import { Component, ReactNode } from 'react';
 import styles from './ErrorBoundary.module.css';
 
 interface Props {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 interface State {
@@ -29,7 +29,7 @@ class ErrorBoundary extends Component<Props, State> {
           <p>Something went wrong...</p>
           <button
             className={styles.resetButton}
-            onClick={() => this.setState({ hasError: false })}
+            onClick={() => window.location.reload()}
           >
             Reboot System
           </button>
@@ -37,7 +37,7 @@ class ErrorBoundary extends Component<Props, State> {
       );
     }
 
-    return this.props.children;
+    return this.props.children || null;
   }
 }
 

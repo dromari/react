@@ -1,4 +1,5 @@
-import { Component, ChangeEvent, KeyboardEvent } from 'react';
+import { useState, ChangeEvent, KeyboardEvent } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import styles from './SearchBar.module.css';
 
 interface Props {
@@ -6,46 +7,39 @@ interface Props {
   initialValue: string;
 }
 
-interface State {
-  inputValue: string;
-}
+export default function SearchBar({ onSearch, initialValue }: Props) {
+  const [inputValue, setInputValue] = useState(initialValue);
+  const [, setSearchParams] = useSearchParams();
 
-class SearchBar extends Component<Props, State> {
-  state: State = {
-    inputValue: this.props.initialValue,
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
   };
 
-  handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ inputValue: e.target.value });
+  const handleBtnClick = () => {
+    const trimmedValue = inputValue.trim();
+    onSearch(trimmedValue);
+    setSearchParams({ page: '1' });
   };
 
-  handleBtnClick = () => {
-    this.props.onSearch(this.state.inputValue.trim());
-  };
-
-  handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      this.handleBtnClick();
+      handleBtnClick();
     }
   };
 
-  render() {
-    return (
-      <div className={styles.topControls}>
-        <input
-          type="text"
-          className={styles.searchInput}
-          value={this.state.inputValue}
-          onChange={this.handleInputChange}
-          onKeyDown={this.handleKeyDown}
-          placeholder="Search Pokemon..."
-        />
-        <button className={styles.searchButton} onClick={this.handleBtnClick}>
-          Search
-        </button>
-      </div>
-    );
-  }
+  return (
+    <div className={styles.topControls}>
+      <input
+        type="text"
+        className={styles.searchInput}
+        value={inputValue}
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
+        placeholder="Search Pokemon..."
+      />
+      <button className={styles.searchButton} onClick={handleBtnClick}>
+        Search
+      </button>
+    </div>
+  );
 }
-
-export default SearchBar;

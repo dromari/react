@@ -88,3 +88,37 @@
     opacity: 1;
   }
 }
+
+.paginationBlock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #333;
+  color: #fff;
+  border-top: 2px solid #222;
+}
+
+.pageButton {
+  background-color: #ffcb05;
+  color: #3b4cca;
+  border: 2px solid #3b4cca;
+  padding: 5px 12px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.pageButton:disabled {
+  background-color: #555;
+  color: #888;
+  border-color: #444;
+  cursor: not-allowed;
+}
+
+.pageInfo {
+  font-weight: bold;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
