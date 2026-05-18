@@ -1,0 +1,106 @@
+.detailsPanel {
+  background-color: #3b4cca;
+  border: 8px solid #333;
+  border-radius: 5px;
+  padding: 20px;
+  position: relative;
+  min-height: 300px;
+  font-family: 'Courier New', Courier, monospace;
+  color: #fff;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.closeBtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ffcb05;
+  color: #333;
+  border: 2px solid #222;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 2px 8px;
+  font-size: 14px;
+  transition: transform 0.1s;
+}
+
+.closeBtn:hover {
+  transform: scale(1.1);
+  background: #ffdd44;
+}
+
+.errorText {
+  color: #ff5555;
+  text-align: center;
+  padding: 40px 10px;
+}
+
+.pokemonTitle {
+  text-align: center;
+  color: #ffcb05;
+  text-shadow: 2px 2px #000;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+}
+
+.imageContainer {
+  background: 90% / cover url(../../../public/what-is-pokemon.jpg);
+  border: 4px solid #222;
+  border-radius: 4px;
+  margin: 0 auto 15px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: 200px;
+  transition: background 0.3s ease;
+}
+
+.imageContainer:has(img) {
+  background: #ffffff;
+}
+
+.loadingText,
+.noImage {
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #ffcb05;
+  text-shadow: 2px 2px #000;
+  animation: blink 1s infinite;
+}
+
+.sprite {
+  width: 200px;
+  height: 200px;
+  image-rendering: pixelated;
+}
+
+.noImage {
+  font-size: 30px;
+}
+
+.statsBlock {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.desc {
+  font-style: italic;
+  color: #00ff00;
+  white-space: pre-line;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}

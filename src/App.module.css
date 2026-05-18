@@ -14,7 +14,7 @@
   position: absolute;
   right: 50px;
   margin-left: 80px;
-  margin-top: 0;
+  margin-top: 10px;
   font-family: 'Arial', sans-serif;
   font-size: 2rem;
   color: #000;
@@ -68,6 +68,11 @@
   outline: none;
 }
 
+.errorButton:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  filter: brightness(1.2);
+}
+
 .errorButton:active {
   transform: scale(0.95);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
@@ -88,4 +93,54 @@
 
 .screenInner {
   margin-top: 5rem;
+}
+
+.aboutButton {
+  position: absolute;
+  top: 20px;
+  right: 50px;
+  z-index: 10;
+  background-color: #ffcb05;
+  border: 2px solid #3b4cca;
+  padding: 5px 12px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.navLinkAbout {
+  color: #3b4cca;
+  text-decoration: none;
+}
+
+.aboutButton:hover {
+  transform: scale(1.1);
+  transition: transform 0.3s;
+}
+
+.splitLayout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.leftColumn {
+  width: 55%;
+  flex-shrink: 0;
+  transition: width 0.3s ease;
+}
+
+.leftColumnFull {
+  width: 100%;
+  flex-shrink: 0;
+  transition: width 0.3s ease;
+}
+
+.rightColumn {
+  width: 45%;
+  flex-shrink: 0;
 }

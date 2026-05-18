@@ -45,22 +45,23 @@ describe('api service logic', () => {
       })
     );
     const result = await fetchDetailedPokemons('test');
-    expect(result).toEqual([]);
+    expect(result).toEqual({ pokemons: [], count: 0 });
   });
 
   it('handles failure during detailed data fetch', async () => {
     server.use(
       http.get(BASE_URL, () => {
         return HttpResponse.json({
-          results: [{ name: 'fail', url: `${BASE_URL}/fail/` }],
+          count: 1,
+          results: [{ name: 'fail', url: `${BASE_URL}/999/` }],
         });
       }),
-      http.get(`${BASE_URL}/fail/`, () => {
+      http.get(`${BASE_URL}/999/`, () => {
         return new HttpResponse(null, { status: 500 });
       })
     );
     const result = await fetchDetailedPokemons('');
-    expect(result).toEqual([]);
+    expect(result).toEqual({ pokemons: [], count: 1 });
   });
 
   it('handles missing image in sprites', async () => {
@@ -78,8 +79,8 @@ describe('api service logic', () => {
       })
     );
     const result = await fetchDetailedPokemons('1');
-    if (Array.isArray(result)) {
-      expect(result[0].image).toBe('');
+    if (result && 'pokemons' in result && Array.isArray(result.pokemons)) {
+      expect(result.pokemons[0].image).toBe('');
     }
   });
 
@@ -87,13 +88,14 @@ describe('api service logic', () => {
     server.use(
       http.get(BASE_URL, () => {
         return HttpResponse.json({
+          count: 1,
           results: [{ name: 'pikachu', url: `${BASE_URL}/1/` }],
         });
       }),
       http.get(`${BASE_URL}/1/`, () => HttpResponse.error())
     );
     const result = await fetchDetailedPokemons('');
-    expect(result).toEqual([]);
+    expect(result).toEqual({ pokemons: [], count: 1 });
   });
 
   it('handles non-Error object in catch', async () => {

@@ -1,12 +1,16 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import ErrorBoundary from './ErrorBoundary';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
 
 const BuggyComponent = () => {
   throw new Error('Test crash');
 };
 
 describe('ErrorBoundary', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('renders children when there is no error', () => {
     render(
       <ErrorBoundary>
@@ -33,6 +37,12 @@ describe('ErrorBoundary', () => {
 
   it('resets error state when "Reboot System" button is clicked', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const reloadMock = vi.fn();
+    vi.stubGlobal('location', {
+      ...window.location,
+      reload: reloadMock,
+    });
 
     let shouldThrow = true;
     const BuggyComponent = () => {
@@ -61,7 +71,14 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText(/Recovered Content/i)).toBeInTheDocument();
-    expect(screen.queryByText(/SYSTEM ERROR/i)).not.toBeInTheDocument();
+    expect(reloadMock).toHaveBeenCalled();
+
+    vi.unstubAllGlobals();
+  });
+
+  it('returns null when no children are provided and there is no error', () => {
+    const { container } = render(<ErrorBoundary />);
+
+    expect(container.firstChild).toBeNull();
   });
 });

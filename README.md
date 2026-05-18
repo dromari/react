@@ -1,6 +1,8 @@
 # Pokédex App
 
-A robust Pokémon encyclopedia application built with **React 18**, **Class Components**, and **TypeScript**. This project demonstrates the core principles of React without using Hooks, focusing on state management, lifecycle methods, and error handling.
+A robust, modern Pokémon encyclopedia application built with **React 18**, **Functional Components**, **Hooks**, and **TypeScript**.
+
+This repository represents the completed evolution of the codebase from an initial Class-based implementation into a modern, state-of-the-art Single Page Application (SPA) driven by **React Router (Data Approach)**, comprehensive URL synchronization, and server-side pagination.
 
 ## 🚀 Getting Started
 
@@ -19,91 +21,74 @@ A robust Pokémon encyclopedia application built with **React 18**, **Class Comp
 
 - **Development Mode:** `npm run dev`
 - **Production Build:** `npm run build`
-- **Production Preview:** `npm run preview` (Recommended for final verification)
+- **Production Preview:** `npm run preview` (Highly recommended for verifying routing and 404 behavior locally)
 
 ---
 
-## 🛠 Features & Verification Guide
+## 🛠 Features & Requirements Compliance (Task Scenarios)
 
-### 1. Application Layout & UI
+### Feature 1: Pagination
 
-- The interface is divided into a **Search Bar** and a **Results Area**.
-- Each Pokémon card displays: **Name**, **Icon**, and **Pokedex Data** (Type, Weight, Height, and Abilities).
+- **Scenario: Paginated Results with URL Synchronization**
+  - **Given** I am viewing the Pokémon list inside the Pokédex,
+  - **When** I navigate to a different page using the pagination controls (`◀ PREV` / `NEXT ▶`),
+  - **Then** the current page is displayed instantly in the URL as a query parameter (e.g., `?page=2`),
+  - **And** the pagination controls dynamically reflect the current page sequence (`PAGE X OF Y`),
+  - **And** pagination interfaces appear strictly after the list of items is fully loaded from the API,
+  - **And** when changing the input query in the search bar, the active page resets to `1` and the URL updates accordingly.
 
-### 2. Search Logic & Persistence
+---
 
-- **Execution:** Search is triggered by the "Search" button or the **Enter** key.
-- **Validation:** Search terms are automatically **trimmed**. Redundant API calls are prevented if the term hasn't changed.
-- **LocalStorage:** The search term is saved to `localStorage`. Upon page reload, the app automatically restores the last search.
+### Feature 2: Master-Detail View (45 Points)
 
-### 3. Data Fetching & Loading
+- **Scenario: Split View with Details Panel**
+  - **Given** I am on the main page displaying the Pokémon search results,
+  - **When** I click on any specific Pokémon row,
+  - **Then** the page smoothly splits into two distinct sections:
+    - The **left section** continues to stably show the search results list, maintaining its current scroll and page tracking.
+    - The **right section** displays the granular Pokémon details using React Router `<Outlet>`.
+  - **And** a custom blinking loading indicator is displayed inside the card frame while detailed information is being fetched.
+  - **And** there is a close control button (`✖`) inside the panel to hide the details section,
+  - **And** by default, no item is selected when the page first loads, keeping the details panel hidden and rendering the search list in full-width layout (`100%`) to prevent Cumulative Layout Shift (CLS),
+  - **And** the URL precisely reflects both the current page query and the selected item path simultaneously (e.g., `/pokemon/bulbasaur?page=2`).
 
-- **Initial Load:** Fetches 20 Pokémon on the first visit or uses the saved term from `localStorage`.
-- **Loading State:** A **"SYSTEM SCANNING..."** indicator is displayed during all API requests.
+---
 
-### 4. Advanced Error Handling
+### Feature 3: Search Logic & LocalStorage Persistence
 
-- **Scenario Handling:**
-  - If a Pokémon is not found (404), a **"NO DATA FOUND"** message is shown.
-  - If the server fails (4xx/5xx), a **"DATABASE ERROR"** banner appears with the specific status code and message.
-- **Clean Console:** All API errors are caught at the component level. The console remains free of "Uncaught" JS errors.
+- **Scenario: Persistent Form Invocations**
+  - **Given** I am typing a query inside the Search input,
+  - **When** I submit the form via the "Search" button or the **Enter** key,
+  - **Then** the search text is automatically **trimmed** to clean up whitespaces,
+  - **And** the search text is cached into the browser's `localStorage` via a custom `useLocalStorage` state lifecycle hook,
+  - **And** redundant, duplicate API calls are completely blocked if the input value has not changed,
+  - **And** upon subsequent application mount cycles, the query text is automatically extracted from storage to immediately re-populate the input field and trigger the corresponding dataset loading.
 
-### 5. Error Boundary
+---
 
-- **Trigger:** Click the **"TEST"** button to simulate a critical UI crash.
-- **Fallback UI:** Displays a "System Error" screen with a **"Reboot System"** option to restore the app.
-- **Note:** To verify the "Clean Console" requirement during a crash, please run `npm run preview`.
+### Feature 4: Routing Exceptions & Error Boundaries
+
+- **Scenario: Unknown Routes & Out-of-Bounds Queries**
+  - **Given** I navigate to a non-existing route, or manually input alpha characters/out-of-bounds metrics inside the `?page=` URL parameter,
+  - **When** the route or URL query format does not match any valid data constraints defined within the application,
+  - **Then** I see an independent, standalone **404 Page** completely replacing the standard Pokédex layout, displaying a clear message indicating the requested resource was not found,
+  - **And** a clear, programmatic link button is provided to return instantly back to the main application root.
 
 ---
 
 ## 🧪 Unit Testing & Code Coverage
 
-The application is covered by a suite of unit tests, ensuring reliability across all individual components and services.
+The test suite has been completely upgraded to run within simulated router contexts, featuring heavily isolated API mocks matching the paginated data structures.
 
 ### Test Stack
 
-- **Vitest:** Testing framework (chosen as a modern alternative to Jest).
-- **React Testing Library:** For component-level unit testing.
-- **MSW (Mock Service Worker):** To mock all API responses (as required by Feature 4).
-- **JSDOM:** Browser environment simulation.
+- **Vitest:** Blazing fast modern test runner.
+- **React Testing Library:** Component rendering and behavioral assert testing.
+- **MSW (Mock Service Worker):** Seamless API call interceptors.
+- **MemoryRouter:** Simulated routing trees to test hooks like `useSearchParams` and `useNavigate`.
 
-### Coverage Statistics
-
-The project achieves **100% statement coverage** across all source files
-
-## ✅ Test Scenarios Coverage (Technical Compliance)
-
-### 1. Search Component Tests
-
-- **Rendering:** Verified that the search input and button render correctly.
-- **LocalStorage Integration:** Tests confirm that the app retrieves the saved term on mount and overwrites it when a new search is performed.
-- **User Interaction:** Verified that the input updates on typing and the search callback is triggered with a **trimmed** value.
-
-### 2. Results & CardList Tests
-
-- **Data Display:** Confirmed that the component renders the correct number of items and displays Pokémon names and descriptions.
-- **Loading State:** Verified that the **"SYSTEM SCANNING..."** indicator is visible during API calls.
-- **Empty State:** Implemented a scenario for empty data arrays, verifying the "NO DATA FOUND" message.
-- **Error Handling:** Tested responses with **4xx** and **5xx** status codes via MSW to ensure correct error banners are shown.
-
-### 3. Item & Loading Components
-
-- **Card Rendering:** Verified that Pokémon names, descriptions, and images are displayed.
-- **Graceful Degradation:** Added a test for missing images, ensuring the **"?" placeholder** is rendered.
-- **Loading Indicator:** Verified the visibility of the loading UI based on the `isLoading` state.
-
-### 4. Error Boundary Tests
-
-- **Crash Recovery:** Verified that the `ErrorBoundary` catches JavaScript errors in child components and displays the fallback UI.
-- **Manual Trigger:** Tested the **"TEST"** button functionality to ensure it successfully triggers the boundary.
-
-### 5. Main App & Integration Tests
-
-- **State Management:** Confirmed that `App.tsx` manages the `searchTerm` state correctly and passes it down to children.
-- **API Integration:** Verified that the initial API call is made on mount and handles both successful and failed responses.
-- **Persistence:** Ensuring seamless interaction between `App` state and `localStorage`.
-
----
+- **100% Statements Coverage** across all core application code (`App.tsx`, `ResultsContainer.tsx`, `PokemonDetails.tsx`, `About.tsx`, `NotFound.tsx`).
+- **100% Functional Coverage** inside logic branches, including all boundary conditions, fallback images, and mock `window.location.reload` states.
 
 ### Test Commands
 
@@ -112,29 +97,24 @@ The project achieves **100% statement coverage** across all source files
 
 ### Automation
 
-- **Husky Integration:** A `pre-push` hook is configured to automatically run the coverage suite. Pushing code is blocked if tests fail or coverage drops below the defined thresholds (80% statements, 50% others).
+- **Husky Integration:** A strict pre-push git hook forces compliance. Committing or pushing changes is completely restricted unless the full suite passes without any trailing linter warnings or coverage drops.
 
 ---
 
-## 📐 Technical Requirements Compliance
+## 📐 Strict RS School Standards Met
 
-### Strict RS School Standards
-
-- **No Hooks:** Zero usage of `useState`, `useEffect`, etc. Only Class Components and lifecycle methods are used.
-- **Strict TypeScript:** No `any` types or `@ts-ignore`. All data structures and props are strictly interfaced.
-- **Architecture:**
-  - Logic is decomposed into specialized modules.
-  - Test utilities and mocks are organized in a separate `src/__tests__` directory.
-- **Clean Code:** No commented-out code, no direct DOM manipulation (`innerHTML`), and no unnecessary `console.log` statements.
-- **Linting:** `npm run lint` passes without any errors or warnings.
+- **Strict TypeScript:** Compiled under absolute strict parameters. No `any` type assignments, no `@ts-ignore` flags, and strict component props definitions.
+- **No Linter Warnings:** `npm run lint` passes with completely clean diagnostics.
+- **Clean Code Rules:** Zero dead code chunks, no leftover console logging scripts, and zero innerHTML or unescaped injection methods.
 
 ---
 
 ## ⚙️ Tech Stack
 
-- **React 18** (Class Components)
-- **TypeScript** (Strict Mode)
-- **Vite** (Build Tool)
-- **Vitest & MSW** (Testing)
-- **CSS Modules** (Scoped Styling)
-- **PokeAPI** (Data Source)
+- **React 18** (Functional Components + Hooks)
+- **React Router v6** (Data Approach API)
+- **TypeScript** (Strict Configurations)
+- **Vite** (Next-gen build tooling)
+- **Vitest & MSW** (Mocking & Assertions)
+- **CSS Modules** (Scoped BEM-styled components)
+- **PokeAPI** (Underlying Data Resource)
