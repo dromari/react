@@ -125,7 +125,7 @@ describe('ResultsContainer Component', () => {
     expect(await screen.findByText(/🔍 NO DATA FOUND/i)).toBeInTheDocument();
   });
 
-  it('redirects to 404 when api returns a standard error without special search term', async () => {
+  it('displays error banner inside container when api returns a standard error', async () => {
     vi.spyOn(api, 'fetchDetailedPokemons').mockResolvedValue({
       isError: true,
       message: 'Failed to fetch items from database',
@@ -135,16 +135,14 @@ describe('ResultsContainer Component', () => {
       <MemoryRouter initialEntries={['/?page=1']}>
         <Routes>
           <Route path="/" element={<ResultsContainer searchTerm="pikachu" />} />
-          <Route path="/404" element={<div>404 Global Redirect Screen</div>} />
         </Routes>
       </MemoryRouter>
     );
 
-    await waitFor(() => {
-      expect(
-        screen.getByText('404 Global Redirect Screen')
-      ).toBeInTheDocument();
-    });
+    const errorBanner = await screen.findByText(
+      'Failed to fetch items from database'
+    );
+    expect(errorBanner).toBeInTheDocument();
   });
 
   it('handles row click when URL has no query parameters', async () => {
@@ -155,7 +153,6 @@ describe('ResultsContainer Component', () => {
 
     render(
       <MemoryRouter initialEntries={['/']}>
-        {' '}
         <Routes>
           <Route path="/" element={<ResultsContainer searchTerm="" />} />
           <Route path="/pokemon/:id" element={<div>Details View Mock</div>} />

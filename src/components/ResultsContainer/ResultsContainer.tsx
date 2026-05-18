@@ -45,12 +45,8 @@ export default function ResultsContainer({ searchTerm }: Props) {
         setPokemons([]);
         setTotalCount(0);
         setIsLoading(false);
-
-        if (searchTerm !== 'error') {
-          navigate('/404', { replace: true });
-        }
         return;
-      } else if (result && 'pokemons' in result) {
+      } else if ('pokemons' in result) {
         setPokemons(result.pokemons);
         setTotalCount(result.count);
 

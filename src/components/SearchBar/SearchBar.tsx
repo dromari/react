@@ -1,5 +1,5 @@
 import { useState, ChangeEvent, KeyboardEvent } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styles from './SearchBar.module.css';
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 
 export default function SearchBar({ onSearch, initialValue }: Props) {
   const [inputValue, setInputValue] = useState(initialValue);
-  const [, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -18,7 +18,8 @@ export default function SearchBar({ onSearch, initialValue }: Props) {
   const handleBtnClick = () => {
     const trimmedValue = inputValue.trim();
     onSearch(trimmedValue);
-    setSearchParams({ page: '1' });
+
+    navigate('/?page=1');
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
