@@ -73,13 +73,13 @@ export default function ResultsContainer({ searchTerm }: Props) {
   const handlePageChange = (pageNumber: number) => {
     const newParams = new URLSearchParams(searchParams);
     newParams.set('page', pageNumber.toString());
-    navigate(`${window.location.pathname}?${newParams.toString()}`);
+    navigate(`/?${newParams.toString()}`);
   };
 
   const handleRowClick = (id: string | number) => {
     const currentParams = searchParams.toString();
     const queryString = currentParams ? `?${currentParams}` : '';
-    navigate(`pokemon/${id}${queryString}`);
+    navigate(`/pokemon/${id}${queryString}`);
   };
 
   return (
