@@ -11,47 +11,68 @@ const ITEMS_PER_PAGE = 5;
 
 export default function ResultsContainer({ searchTerm }: Props) {
   const [pokemons, setPokemons] = useState<PokemonListItem[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const currentPage = parseInt(searchParams.get('page') || '1', 10);
+
+  const pageParam = searchParams.get('page');
+
+  const isPageValid = pageParam === null || /^\d+$/.test(pageParam);
+
+  const currentPage = isPageValid ? parseInt(pageParam || '1', 10) : 1;
 
   useEffect(() => {
     const loadData = async () => {
+      if (!isPageValid) {
+        navigate('/404', { replace: true });
+        return;
+      }
+
       setIsLoading(true);
       setErrorMessage(null);
 
-      const result = await fetchDetailedPokemons(searchTerm);
+      const result = await fetchDetailedPokemons(
+        searchTerm,
+        currentPage,
+        ITEMS_PER_PAGE
+      );
 
       if (result && 'isError' in result) {
-        const errorText = result.status
-          ? `Error ${result.status}: ${result.message}`
-          : `System Error: ${result.message}`;
-        setErrorMessage(errorText);
+        setErrorMessage(result.message);
         setPokemons([]);
-      } else if (result.length === 0) {
-        setPokemons([]);
-      } else {
-        setPokemons(result as PokemonListItem[]);
+        setTotalCount(0);
+      } else if ('pokemons' in result) {
+        setPokemons(result.pokemons);
+        setTotalCount(result.count);
+        const maxPages = Math.ceil(result.count / ITEMS_PER_PAGE);
+
+        if ((currentPage > maxPages && maxPages > 0) || currentPage < 1) {
+          setIsLoading(false);
+          navigate('/404', { replace: true });
+          return;
+        }
       }
       setIsLoading(false);
     };
 
     loadData();
-  }, [searchTerm]);
+  }, [searchTerm, currentPage, isPageValid, navigate]);
 
-  const totalPages = Math.ceil(pokemons.length / ITEMS_PER_PAGE);
-  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
-  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-  const currentItems = pokemons.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
   const handlePageChange = (pageNumber: number) => {
-    setSearchParams({ page: pageNumber.toString() });
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('page', pageNumber.toString());
+    navigate(`${window.location.pathname}?${newParams.toString()}`);
   };
 
   const handleRowClick = (id: string | number) => {
-    navigate(`pokemon/${id}`);
+    const currentParams = searchParams.toString();
+    const queryString = currentParams ? `?${currentParams}` : '';
+    navigate(`pokemon/${id}${queryString}`);
   };
 
   return (
@@ -62,30 +83,26 @@ export default function ResultsContainer({ searchTerm }: Props) {
         <div className={styles.cellData}>POKEDEX DATA</div>
       </div>
 
-      <div>
+      <div className={styles.tableBody}>
         {isLoading && <div className={styles.scanning}>SYSTEM SCANNING...</div>}
 
         {errorMessage && !isLoading && (
           <div className={styles.errorBanner}>
             <h3>⚠️ DATABASE ERROR</h3>
             <p>{errorMessage}</p>
-            <p>Please check your connection or try a different request.</p>
           </div>
         )}
 
         {!isLoading && !errorMessage && pokemons.length === 0 && (
           <div className={styles.errorBanner}>
             <h3>🔍 NO DATA FOUND</h3>
-            <p>
-              The Pokemon you are looking for does not exist in our database.
-            </p>
           </div>
         )}
 
         {!isLoading &&
           !errorMessage &&
-          currentItems.length > 0 &&
-          currentItems.map((pokemon) => (
+          pokemons.length > 0 &&
+          pokemons.map((pokemon) => (
             <div
               key={pokemon.name}
               className={styles.tableRow}

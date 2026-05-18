@@ -4,6 +4,11 @@ export interface PokemonListItem {
   image: string;
 }
 
+export interface PaginatedPokemonResponse {
+  pokemons: PokemonListItem[];
+  count: number;
+}
+
 export interface ApiError {
   isError: true;
   message: string;
@@ -31,18 +36,26 @@ interface IPokeResponse {
 }
 
 interface IListResponse {
+  count: number;
   results: { name: string; url: string }[];
 }
 
 const BASE_URL = 'https://pokeapi.co/api/v2/pokemon';
 
 export const fetchDetailedPokemons = async (
-  searchTerm?: string
-): Promise<PokemonListItem[] | ApiError> => {
+  searchTerm?: string,
+  page: number = 1,
+  limit: number = 5
+): Promise<PaginatedPokemonResponse | ApiError> => {
   const isSpecificSearch = !!(searchTerm && searchTerm.trim());
-  const url = isSpecificSearch
-    ? `${BASE_URL}/${searchTerm.toLowerCase().trim()}`
-    : `${BASE_URL}?limit=20`;
+
+  let url = '';
+  if (isSpecificSearch) {
+    url = `${BASE_URL}/${searchTerm.toLowerCase().trim()}`;
+  } else {
+    const offset = (page - 1) * limit;
+    url = `${BASE_URL}?limit=${limit}&offset=${offset}`;
+  }
 
   try {
     const response = await fetch(url);
@@ -61,13 +74,16 @@ export const fetchDetailedPokemons = async (
     const data = (await response.json()) as IPokeResponse | IListResponse;
 
     let items: { name: string; url: string }[];
+    let totalCount = 0;
 
     if (isSpecificSearch && 'id' in data) {
       items = [{ name: data.name, url: `${BASE_URL}/${data.id}/` }];
+      totalCount = 1;
     } else if ('results' in data) {
       items = data.results;
+      totalCount = data.count;
     } else {
-      return [];
+      return { pokemons: [], count: 0 };
     }
 
     const detailedData = await Promise.all(
@@ -99,9 +115,14 @@ export const fetchDetailedPokemons = async (
       })
     );
 
-    return detailedData.filter(
+    const filteredPokemons = detailedData.filter(
       (item): item is PokemonListItem => item !== null
     );
+
+    return {
+      pokemons: filteredPokemons,
+      count: totalCount,
+    };
   } catch (error) {
     return {
       isError: true,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchDetailedPokemons, PokemonListItem } from '../../services/api';
 import styles from './PokemonDetails.module.css';
 
@@ -7,11 +7,21 @@ export default function PokemonDetails() {
   const { detailsId } = useParams<{ detailsId: string }>();
   const navigate = useNavigate();
 
+  const [searchParams] = useSearchParams();
+  const pageParam = searchParams.get('page');
+
+  const isPageValid = pageParam === null || /^\d+$/.test(pageParam);
+
   const [pokemon, setPokemon] = useState<PokemonListItem | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!isPageValid) {
+      navigate('/404', { replace: true });
+      return;
+    }
+
     if (!detailsId) {
       setPokemon(null);
       setError(null);
@@ -26,36 +36,42 @@ export default function PokemonDetails() {
       const result = await fetchDetailedPokemons(detailsId);
 
       if (result && 'isError' in result) {
-        setError(result.message);
-        setPokemon(null);
-      } else if (Array.isArray(result) && result.length > 0) {
-        setPokemon(result[0]);
+        setIsLoading(false);
+        navigate('/404', { replace: true });
+        return;
+      } else if (result && 'pokemons' in result && result.pokemons.length > 0) {
+        setPokemon(result.pokemons[0]);
       } else {
-        setError('No details found for this Pokemon');
-        setPokemon(null);
+        setIsLoading(false);
+        navigate('/404', { replace: true });
+        return;
       }
 
       setIsLoading(false);
     };
 
     getDetails();
-  }, [detailsId]);
+  }, [detailsId, isPageValid, navigate]);
 
   const handleClose = () => {
-    navigate('/');
+    const currentParams = searchParams.toString();
+    const queryString = currentParams ? `?${currentParams}` : '';
+    navigate(`/${queryString}`);
   };
+
+  if (!detailsId) {
+    return null;
+  }
 
   return (
     <div className={styles.detailsPanel}>
-      {detailsId && (
-        <button
-          onClick={handleClose}
-          className={styles.closeBtn}
-          title="Close Details"
-        >
-          ✖
-        </button>
-      )}
+      <button
+        onClick={handleClose}
+        className={styles.closeBtn}
+        title="Close Details"
+      >
+        ✖
+      </button>
 
       {isLoading && (
         <div className={styles.loadingText}>LOADING DETAILS...</div>
@@ -68,32 +84,22 @@ export default function PokemonDetails() {
         </div>
       )}
 
-      {!isLoading && !error && (
+      {!isLoading && !error && pokemon && (
         <div className={styles.content}>
-          <h2 className={styles.pokemonTitle}>
-            {pokemon ? pokemon.name : 'NAME'}
-          </h2>
-
+          <h2 className={styles.pokemonTitle}>{pokemon.name}</h2>
           <div className={styles.imageContainer}>
-            {pokemon ? (
-              pokemon.image ? (
-                <img
-                  src={pokemon.image}
-                  alt={pokemon.name}
-                  className={styles.sprite}
-                />
-              ) : (
-                <div className={styles.noImage}>NO PHOTO</div>
-              )
+            {pokemon.image ? (
+              <img
+                src={pokemon.image}
+                alt={pokemon.name}
+                className={styles.sprite}
+              />
             ) : (
-              <div className={styles.noImage}>?</div>
+              <div className={styles.noImage}>NO PHOTO</div>
             )}
           </div>
-
           <div className={styles.statsBlock}>
-            <p className={styles.desc}>
-              {pokemon ? pokemon.description : 'Description'}
-            </p>
+            <p className={styles.desc}>{pokemon.description}</p>
           </div>
         </div>
       )}

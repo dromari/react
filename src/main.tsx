@@ -17,11 +17,8 @@ const router = createBrowserRouter(
           <App />
         </ErrorBoundary>
       ),
+      errorElement: <NotFound />,
       children: [
-        {
-          index: true,
-          element: <PokemonDetails />,
-        },
         {
           path: 'pokemon/:detailsId',
           element: <PokemonDetails />,
