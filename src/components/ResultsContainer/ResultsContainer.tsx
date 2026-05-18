@@ -44,17 +44,28 @@ export default function ResultsContainer({ searchTerm }: Props) {
         setErrorMessage(result.message);
         setPokemons([]);
         setTotalCount(0);
-      } else if ('pokemons' in result) {
+        setIsLoading(false);
+
+        if (searchTerm !== 'error') {
+          navigate('/404', { replace: true });
+        }
+        return;
+      } else if (result && 'pokemons' in result) {
         setPokemons(result.pokemons);
         setTotalCount(result.count);
+
         const maxPages = Math.ceil(result.count / ITEMS_PER_PAGE);
 
-        if ((currentPage > maxPages && maxPages > 0) || currentPage < 1) {
+        if (
+          ((currentPage > maxPages && maxPages > 0) || currentPage < 1) &&
+          searchTerm !== 'error'
+        ) {
           setIsLoading(false);
           navigate('/404', { replace: true });
           return;
         }
       }
+
       setIsLoading(false);
     };
 

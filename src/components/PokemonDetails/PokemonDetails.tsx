@@ -77,13 +77,6 @@ export default function PokemonDetails() {
         <div className={styles.loadingText}>LOADING DETAILS...</div>
       )}
 
-      {error && !isLoading && (
-        <div className={styles.errorText}>
-          <h4>⚠️ DETAILS ERROR</h4>
-          <p>{error}</p>
-        </div>
-      )}
-
       {!isLoading && !error && pokemon && (
         <div className={styles.content}>
           <h2 className={styles.pokemonTitle}>{pokemon.name}</h2>

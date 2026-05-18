@@ -1,10 +1,15 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 import SearchBar from '../components/SearchBar/SearchBar';
 
 describe('SearchBar Component', () => {
   it('renders with initial value from props', () => {
-    render(<SearchBar onSearch={() => {}} initialValue="Pikachu" />);
+    render(
+      <MemoryRouter>
+        <SearchBar onSearch={() => {}} initialValue="Pikachu" />
+      </MemoryRouter>
+    );
     const input = screen.getByPlaceholderText(
       /Search Pokemon.../i
     ) as HTMLInputElement;
@@ -13,7 +18,11 @@ describe('SearchBar Component', () => {
   });
 
   it('updates input value on change', () => {
-    render(<SearchBar onSearch={() => {}} initialValue="" />);
+    render(
+      <MemoryRouter>
+        <SearchBar onSearch={() => {}} initialValue="" />
+      </MemoryRouter>
+    );
     const input = screen.getByPlaceholderText(
       /Search Pokemon.../i
     ) as HTMLInputElement;
@@ -24,7 +33,11 @@ describe('SearchBar Component', () => {
 
   it('calls onSearch with trimmed value when button is clicked', () => {
     const mockSearch = vi.fn();
-    render(<SearchBar onSearch={mockSearch} initialValue="" />);
+    render(
+      <MemoryRouter>
+        <SearchBar onSearch={mockSearch} initialValue="" />
+      </MemoryRouter>
+    );
 
     const input = screen.getByPlaceholderText(/Search Pokemon.../i);
     const button = screen.getByRole('button', { name: /search/i });
@@ -37,7 +50,11 @@ describe('SearchBar Component', () => {
 
   it('calls onSearch when Enter key is pressed', () => {
     const mockSearch = vi.fn();
-    render(<SearchBar onSearch={mockSearch} initialValue="" />);
+    render(
+      <MemoryRouter>
+        <SearchBar onSearch={mockSearch} initialValue="" />
+      </MemoryRouter>
+    );
 
     const input = screen.getByPlaceholderText(/Search Pokemon.../i);
 
@@ -49,7 +66,11 @@ describe('SearchBar Component', () => {
 
   it('does not call onSearch when other keys are pressed', () => {
     const mockSearch = vi.fn();
-    render(<SearchBar onSearch={mockSearch} initialValue="" />);
+    render(
+      <MemoryRouter>
+        <SearchBar onSearch={mockSearch} initialValue="" />
+      </MemoryRouter>
+    );
 
     const input = screen.getByPlaceholderText(/Search Pokemon.../i);
 
