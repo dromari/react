@@ -130,6 +130,7 @@ export default function ResultsContainer({
                   onClick={(e) => e.stopPropagation()}
                 >
                   <input
+                    className={styles.checkbox}
                     type="checkbox"
                     checked={isSelected}
                     onChange={() => togglePokemon(pokemon)}
