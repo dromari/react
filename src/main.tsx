@@ -8,6 +8,7 @@ import About from './components/About/About';
 import NotFound from './components/NotFound/NotFound';
 import PokemonDetails from './components/PokemonDetails/PokemonDetails';
 import ThemeProvider from './context/ThemeProvider.tsx';
+import './main.css';
 
 const router = createHashRouter([
   {

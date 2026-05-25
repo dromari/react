@@ -130,4 +130,36 @@ describe('App Component Integration', () => {
     fireEvent.click(screen.getByRole('button', { name: /LIGHT/i }));
     expect(screen.getByRole('button', { name: /DARK/i })).toBeInTheDocument();
   });
+
+  it('handles secure localStorage target errors inside ThemeProvider initialization catch block', () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('Security Block Error');
+    });
+
+    render(
+      <ThemeProvider>
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      </ThemeProvider>
+    );
+
+    expect(screen.getByRole('button', { name: /DARK/i })).toBeInTheDocument();
+  });
+
+  it('initializes with dark theme if it is already saved in localStorage', () => {
+    vi.restoreAllMocks();
+
+    localStorage.setItem('app_theme', 'dark');
+
+    render(
+      <ThemeProvider>
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      </ThemeProvider>
+    );
+
+    expect(screen.getByRole('button', { name: /LIGHT/i })).toBeInTheDocument();
+  });
 });

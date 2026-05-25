@@ -1,0 +1,14 @@
+body.dark {
+  background-color: #1a1a1a;
+  color: #f5f5f5;
+}
+
+body.dark ::-webkit-scrollbar {
+  width: 100px;
+  background-color: #2b2b2b;
+}
+
+body.dark ::-webkit-scrollbar-thumb {
+  background-color: #444444;
+  border-radius: 4px;
+}
