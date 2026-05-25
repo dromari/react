@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import PokemonDetails from '../components/PokemonDetails/PokemonDetails';
 import * as api from '../services/api';
+import { ApiError } from '../types/pokemonTypes';
 
 describe('PokemonDetails Component', () => {
   beforeEach(() => {
@@ -94,7 +95,7 @@ describe('PokemonDetails Component', () => {
     });
   });
   it('redirects to 404 when api returns an error', async () => {
-    const apiError: api.ApiError = { isError: true, message: 'Not Found' };
+    const apiError: ApiError = { isError: true, message: 'Not Found' };
     vi.spyOn(api, 'fetchDetailedPokemons').mockResolvedValue(apiError);
 
     renderWithRouter('invalid-pokemon');
