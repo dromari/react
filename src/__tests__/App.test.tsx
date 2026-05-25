@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import App from '../App';
 import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
+import ThemeProvider from '../context/ThemeProvider';
 
 describe('App Component Integration', () => {
   beforeEach(() => {
@@ -13,9 +14,11 @@ describe('App Component Integration', () => {
   it('loads with initial value from localStorage', () => {
     localStorage.setItem('pokeSearch', '"pikachu"');
     render(
-      <MemoryRouter>
-        <App />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      </ThemeProvider>
     );
 
     const input = screen.getByPlaceholderText(
@@ -26,9 +29,11 @@ describe('App Component Integration', () => {
 
   it('updates state and localStorage on search', () => {
     render(
-      <MemoryRouter>
-        <App />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      </ThemeProvider>
     );
     const input = screen.getByPlaceholderText(/Search Pokemon.../i);
     const button = screen.getByRole('button', { name: /search/i });
@@ -43,11 +48,13 @@ describe('App Component Integration', () => {
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     render(
-      <ErrorBoundary>
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
-      </ErrorBoundary>
+      <ThemeProvider>
+        <ErrorBoundary>
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        </ErrorBoundary>
+      </ThemeProvider>
     );
 
     const errorButton = screen.getByRole('button', { name: /test/i });
@@ -59,16 +66,20 @@ describe('App Component Integration', () => {
 
   it('triggers navigate on background click and blocks propagation inside right column', () => {
     render(
-      <MemoryRouter initialEntries={['/pokemon/pikachu']}>
-        <Routes>
-          <Route path="/" element={<App />}>
-            <Route
-              path="pokemon/:detailsId"
-              element={<div data-testid="details-content">Details Outlet</div>}
-            />
-          </Route>
-        </Routes>
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter initialEntries={['/pokemon/pikachu']}>
+          <Routes>
+            <Route path="/" element={<App />}>
+              <Route
+                path="pokemon/:detailsId"
+                element={
+                  <div data-testid="details-content">Details Outlet</div>
+                }
+              />
+            </Route>
+          </Routes>
+        </MemoryRouter>
+      </ThemeProvider>
     );
 
     const detailsView = screen.getByTestId('details-content');
@@ -91,9 +102,11 @@ describe('App Component Integration', () => {
     });
 
     render(
-      <MemoryRouter>
-        <App />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      </ThemeProvider>
     );
 
     expect(screen.getByText(/Pokédex v1.0/i)).toBeInTheDocument();
