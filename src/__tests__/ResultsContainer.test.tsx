@@ -7,6 +7,7 @@ import ResultsContainer from '../components/ResultsContainer/ResultsContainer';
 import * as api from '../services/api';
 import { BASE_URL } from '../constants/pokemonConstants';
 import { PaginatedPokemonResponse } from '../types/pokemonTypes';
+import ThemeProvider from '../context/ThemeProvider';
 
 describe('ResultsContainer Component', () => {
   afterEach(() => {
@@ -183,5 +184,34 @@ describe('ResultsContainer Component', () => {
 
     const noDataMsg = await screen.findByText(/🔍 NO DATA FOUND/i);
     expect(noDataMsg).toBeInTheDocument();
+  });
+  it('toggles pokemon selection and stops propagation on checkbox click', async () => {
+    vi.spyOn(api, 'fetchDetailedPokemons').mockResolvedValue({
+      pokemons: [{ name: 'BULBASAUR', description: 'Grass', image: 'img' }],
+      count: 1,
+    });
+
+    render(
+      <ThemeProvider>
+        <MemoryRouter initialEntries={['/?page=1']}>
+          <Routes>
+            <Route path="/" element={<ResultsContainer searchTerm="" />} />
+          </Routes>
+        </MemoryRouter>
+      </ThemeProvider>
+    );
+
+    const pokemonRow = await screen.findByText(/BULBASAUR/i);
+    expect(pokemonRow).toBeInTheDocument();
+
+    const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
+    expect(checkbox).toBeInTheDocument();
+
+    fireEvent.click(checkbox);
+
+    expect(checkbox.checked).toBe(true);
+
+    fireEvent.click(checkbox);
+    expect(checkbox.checked).toBe(false);
   });
 });

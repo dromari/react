@@ -111,4 +111,23 @@ describe('App Component Integration', () => {
 
     expect(screen.getByText(/Pokédex v1.0/i)).toBeInTheDocument();
   });
+  it('toggles theme correctly when theme button is clicked', () => {
+    render(
+      <ThemeProvider>
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      </ThemeProvider>
+    );
+
+    const themeButton = screen.getByRole('button', { name: /DARK/i });
+    expect(themeButton).toBeInTheDocument();
+
+    fireEvent.click(themeButton);
+
+    expect(screen.getByRole('button', { name: /LIGHT/i })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /LIGHT/i }));
+    expect(screen.getByRole('button', { name: /DARK/i })).toBeInTheDocument();
+  });
 });
