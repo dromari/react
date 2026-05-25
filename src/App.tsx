@@ -2,8 +2,11 @@ import { useState, MouseEvent } from 'react';
 import { Link, Outlet, useNavigate, useParams } from 'react-router-dom';
 import SearchBar from './components/SearchBar/SearchBar';
 import ResultsContainer from './components/ResultsContainer/ResultsContainer';
+import Flyout from './components/Flyout/Flyout';
 import { useLocalStorage } from './hooks/useLocalStorage';
+
 import styles from './App.module.css';
+import { useTheme } from './hooks/useTheme';
 
 export default function App() {
   const [searchTerm, setSearchTerm] = useLocalStorage<string>('pokeSearch', '');
@@ -11,6 +14,8 @@ export default function App() {
 
   const navigate = useNavigate();
   const { detailsId } = useParams<{ detailsId: string }>();
+
+  const { theme, toggleTheme } = useTheme();
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -31,7 +36,18 @@ export default function App() {
   }
 
   return (
-    <div className={styles.mainWrapper} onClick={handleMainPanelClick}>
+    <div
+      className={`${styles.mainWrapper} ${theme === 'dark' ? styles.darkTheme : ''}`}
+      onClick={handleMainPanelClick}
+    >
+      <button
+        className={styles.themeButton}
+        onClick={toggleTheme}
+        title="Switch Theme"
+      >
+        {theme === 'light' ? 'DARK' : 'LIGHT'}
+      </button>
+
       <button className={styles.aboutButton}>
         <Link to="/about" className={styles.navLinkAbout}>
           ABOUT
@@ -75,6 +91,7 @@ export default function App() {
           </div>
         )}
       </div>
+      <Flyout />
     </div>
   );
 }

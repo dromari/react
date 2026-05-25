@@ -1,27 +1,27 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { fetchDetailedPokemons, PokemonListItem } from '../../services/api';
+import { fetchDetailedPokemons } from '../../services/api';
 import styles from './Results.module.css';
+import {
+  PokemonListItem,
+  ResultsContainerProps,
+} from '../../types/pokemonTypes';
+import { ITEMS_PER_PAGE } from '../../constants/pokemonConstants';
+import { usePokemonStore } from '../../store/usePokemonStore';
 
-interface Props {
-  searchTerm: string;
-}
-
-const ITEMS_PER_PAGE = 5;
-
-export default function ResultsContainer({ searchTerm }: Props) {
+export default function ResultsContainer({
+  searchTerm,
+}: ResultsContainerProps) {
   const [pokemons, setPokemons] = useState<PokemonListItem[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
+  const { selectedPokemons, togglePokemon } = usePokemonStore();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const pageParam = searchParams.get('page');
-
   const isPageValid = pageParam === null || /^\d+$/.test(pageParam);
-
   const currentPage = isPageValid ? parseInt(pageParam || '1', 10) : 1;
 
   useEffect(() => {
@@ -52,7 +52,10 @@ export default function ResultsContainer({ searchTerm }: Props) {
 
         const maxPages = Math.ceil(result.count / ITEMS_PER_PAGE);
 
+        const isSpecificSearch = !!(searchTerm && searchTerm.trim());
+
         if (
+          !isSpecificSearch &&
           ((currentPage > maxPages && maxPages > 0) || currentPage < 1) &&
           searchTerm !== 'error'
         ) {
@@ -85,6 +88,7 @@ export default function ResultsContainer({ searchTerm }: Props) {
   return (
     <div className={styles.resultsArea}>
       <div className={styles.tableHeader}>
+        <div className={styles.cellCheckbox}>SELECT</div>
         <div className={styles.cellName}>NAME</div>
         <div className={styles.cellImage}>ICON</div>
         <div className={styles.cellData}>POKEDEX DATA</div>
@@ -109,34 +113,52 @@ export default function ResultsContainer({ searchTerm }: Props) {
         {!isLoading &&
           !errorMessage &&
           pokemons.length > 0 &&
-          pokemons.map((pokemon) => (
-            <div
-              key={pokemon.name}
-              className={styles.tableRow}
-              onClick={() => handleRowClick(pokemon.name)}
-              style={{ cursor: 'pointer' }}
-            >
-              <div className={styles.cellName}>
-                <strong>{pokemon.name}</strong>
-              </div>
-              <div className={styles.cellImage}>
-                {pokemon.image ? (
-                  <img
-                    src={pokemon.image}
-                    alt={pokemon.name}
-                    className={styles.pokemonSprite}
+          pokemons.map((pokemon) => {
+            const isSelected = selectedPokemons.some(
+              (p) => p.name === pokemon.name
+            );
+
+            return (
+              <div
+                key={pokemon.name}
+                className={styles.tableRow}
+                onClick={() => handleRowClick(pokemon.name)}
+                style={{ cursor: 'pointer' }}
+              >
+                <div
+                  className={styles.cellCheckbox}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => togglePokemon(pokemon)}
+                    style={{ cursor: 'pointer' }}
                   />
-                ) : (
-                  <div className={styles.noImage}>?</div>
-                )}
+                </div>
+
+                <div className={styles.cellName}>
+                  <strong>{pokemon.name}</strong>
+                </div>
+                <div className={styles.cellImage}>
+                  {pokemon.image ? (
+                    <img
+                      src={pokemon.image}
+                      alt={pokemon.name}
+                      className={styles.pokemonSprite}
+                    />
+                  ) : (
+                    <div className={styles.noImage}>?</div>
+                  )}
+                </div>
+                <div className={styles.cellData}>
+                  <span className={styles.descriptionText}>
+                    {pokemon.description}
+                  </span>
+                </div>
               </div>
-              <div className={styles.cellData}>
-                <span className={styles.descriptionText}>
-                  {pokemon.description}
-                </span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
       </div>
 
       {!isLoading && !errorMessage && totalPages > 1 && (

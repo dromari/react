@@ -5,8 +5,8 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { server } from './node';
 import ResultsContainer from '../components/ResultsContainer/ResultsContainer';
 import * as api from '../services/api';
-
-const BASE_URL = 'https://pokeapi.co';
+import { BASE_URL } from '../constants/pokemonConstants';
+import { PaginatedPokemonResponse } from '../types/pokemonTypes';
 
 describe('ResultsContainer Component', () => {
   afterEach(() => {
@@ -169,7 +169,7 @@ describe('ResultsContainer Component', () => {
   });
 
   it('handles fallback when API response does not contain pokemons field', async () => {
-    const unexpectedResponse = {} as unknown as api.PaginatedPokemonResponse;
+    const unexpectedResponse = {} as unknown as PaginatedPokemonResponse;
 
     vi.spyOn(api, 'fetchDetailedPokemons').mockResolvedValue(
       unexpectedResponse

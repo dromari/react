@@ -1,13 +1,9 @@
 import { useState, ChangeEvent, KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './SearchBar.module.css';
+import { SearchBarProps } from '../../types/pokemonTypes';
 
-interface Props {
-  onSearch: (term: string) => void;
-  initialValue: string;
-}
-
-export default function SearchBar({ onSearch, initialValue }: Props) {
+export default function SearchBar({ onSearch, initialValue }: SearchBarProps) {
   const [inputValue, setInputValue] = useState(initialValue);
   const navigate = useNavigate();
 

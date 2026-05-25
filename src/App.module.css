@@ -8,16 +8,33 @@
   position: relative;
   min-height: 500px;
   box-shadow: 10px 10px 0px #333;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.mainWrapper.darkTheme {
+  background-color: #2b2b2b;
+  border-color: #1a1a1a;
+  box-shadow: 10px 10px 0px #111111;
 }
 
 .title {
   position: absolute;
   right: 50px;
   margin-left: 80px;
-  margin-top: 10px;
-  font-family: 'Arial', sans-serif;
+  margin-top: 20px;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
   font-size: 2rem;
   color: #000;
+  transition: color 0.3s ease;
+}
+
+.mainWrapper.darkTheme .title {
+  color: #ffffff;
+  text-shadow: 0 0 5px #ffcb05;
 }
 
 .smallLights {
@@ -95,10 +112,12 @@
   margin-top: 5rem;
 }
 
-.aboutButton {
+.aboutButton,
+.themeButton {
+  width: 70px;
+  height: 30px;
   position: absolute;
   top: 20px;
-  right: 50px;
   z-index: 10;
   background-color: #ffcb05;
   border: 2px solid #3b4cca;
@@ -109,14 +128,34 @@
   border-radius: 4px;
 }
 
+.aboutButton {
+  right: 50px;
+}
+
+.themeButton {
+  right: 150px;
+}
+
 .navLinkAbout {
   color: #3b4cca;
   text-decoration: none;
 }
 
-.aboutButton:hover {
-  transform: scale(1.1);
+.aboutButton:hover,
+.themeButton:hover {
+  transform: scale(1.05);
   transition: transform 0.3s;
+}
+
+.mainWrapper.darkTheme .aboutButton,
+.mainWrapper.darkTheme .themeButton {
+  background-color: #3b4cca;
+  border-color: #ffcb05;
+}
+
+.mainWrapper.darkTheme .navLinkAbout,
+.mainWrapper.darkTheme .themeButton {
+  color: #ffcb05;
 }
 
 .splitLayout {

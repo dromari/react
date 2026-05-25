@@ -145,3 +145,10 @@
   font-size: 0.9rem;
   letter-spacing: 1px;
 }
+
+.cellCheckbox {
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

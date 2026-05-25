@@ -7,6 +7,7 @@ import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import About from './components/About/About';
 import NotFound from './components/NotFound/NotFound';
 import PokemonDetails from './components/PokemonDetails/PokemonDetails';
+import ThemeProvider from './context/ThemeProvider.tsx';
 
 const router = createHashRouter([
   {
@@ -39,9 +40,11 @@ const rootElement = document.getElementById('root');
 if (rootElement) {
   createRoot(rootElement).render(
     <StrictMode>
-      <ErrorBoundary>
-        <RouterProvider router={router} />
-      </ErrorBoundary>
+      <ThemeProvider>
+        <ErrorBoundary>
+          <RouterProvider router={router} />
+        </ErrorBoundary>
+      </ThemeProvider>
     </StrictMode>
   );
 }

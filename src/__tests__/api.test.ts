@@ -1,9 +1,8 @@
+import { BASE_URL } from '../constants/pokemonConstants';
 import { fetchDetailedPokemons } from '../services/api';
 import { server } from './node';
 import { http, HttpResponse } from 'msw';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-
-const BASE_URL = 'https://pokeapi.co/api/v2/pokemon';
 
 describe('api service logic', () => {
   afterEach(() => {
