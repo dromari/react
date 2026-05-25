@@ -1,8 +1,25 @@
+import { useEffect } from 'react';
 import { usePokemonStore } from '../../store/usePokemonStore';
 import styles from './Flyout.module.css';
 
 export default function Flyout() {
   const { selectedPokemons, unselectAll } = usePokemonStore();
+
+  useEffect(() => {
+    if (selectedPokemons.length === 0) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        unselectAll();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedPokemons, unselectAll]);
 
   if (selectedPokemons.length === 0) return null;
 

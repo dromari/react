@@ -95,4 +95,27 @@ describe('Flyout Component Coverage Tests', () => {
     expect(removeChildSpy).toHaveBeenCalled();
     expect(revokeObjectURLMock).toHaveBeenCalled();
   });
+  it('calls unselectAll when pressing the Escape key', () => {
+    const mockUnselectAll = vi.fn();
+
+    vi.mocked(usePokemonStore).mockReturnValue({
+      selectedPokemons: [
+        {
+          name: 'PIKACHU',
+          description: 'Electric',
+          image: '',
+          detailsUrl: 'http://pokeapi/1',
+        },
+      ],
+      unselectAll: mockUnselectAll,
+    });
+
+    render(<Flyout />);
+    fireEvent.keyDown(window, { key: 'Enter', code: 'Enter' });
+    expect(mockUnselectAll).not.toHaveBeenCalled();
+
+    fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
+
+    expect(mockUnselectAll).toHaveBeenCalledTimes(1);
+  });
 });
