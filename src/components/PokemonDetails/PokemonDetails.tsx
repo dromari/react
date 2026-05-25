@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { fetchDetailedPokemons, PokemonListItem } from '../../services/api';
+import { fetchDetailedPokemons } from '../../services/api';
 import styles from './PokemonDetails.module.css';
+import { PokemonListItem } from '../../types/pokemonTypes';
 
 export default function PokemonDetails() {
   const { detailsId } = useParams<{ detailsId: string }>();

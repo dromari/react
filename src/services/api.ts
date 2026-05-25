@@ -1,19 +1,9 @@
-export interface PokemonListItem {
-  name: string;
-  description: string;
-  image: string;
-}
-
-export interface PaginatedPokemonResponse {
-  pokemons: PokemonListItem[];
-  count: number;
-}
-
-export interface ApiError {
-  isError: true;
-  message: string;
-  status?: number;
-}
+import { BASE_URL, ITEMS_PER_PAGE } from '../constants/pokemonConstants';
+import {
+  ApiError,
+  PaginatedPokemonResponse,
+  PokemonListItem,
+} from '../types/pokemonTypes';
 
 interface IPokeType {
   type: { name: string };
@@ -40,12 +30,10 @@ interface IListResponse {
   results: { name: string; url: string }[];
 }
 
-const BASE_URL = 'https://pokeapi.co/api/v2/pokemon';
-
 export const fetchDetailedPokemons = async (
   searchTerm?: string,
   page: number = 1,
-  limit: number = 5
+  limit: number = ITEMS_PER_PAGE
 ): Promise<PaginatedPokemonResponse | ApiError> => {
   const isSpecificSearch = !!(searchTerm && searchTerm.trim());
 

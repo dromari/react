@@ -5,8 +5,9 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { server } from './node';
 import ResultsContainer from '../components/ResultsContainer/ResultsContainer';
 import * as api from '../services/api';
-
-const BASE_URL = 'https://pokeapi.co';
+import { BASE_URL } from '../constants/pokemonConstants';
+import { PaginatedPokemonResponse } from '../types/pokemonTypes';
+import ThemeProvider from '../context/ThemeProvider';
 
 describe('ResultsContainer Component', () => {
   afterEach(() => {
@@ -169,7 +170,7 @@ describe('ResultsContainer Component', () => {
   });
 
   it('handles fallback when API response does not contain pokemons field', async () => {
-    const unexpectedResponse = {} as unknown as api.PaginatedPokemonResponse;
+    const unexpectedResponse = {} as unknown as PaginatedPokemonResponse;
 
     vi.spyOn(api, 'fetchDetailedPokemons').mockResolvedValue(
       unexpectedResponse
@@ -183,5 +184,34 @@ describe('ResultsContainer Component', () => {
 
     const noDataMsg = await screen.findByText(/🔍 NO DATA FOUND/i);
     expect(noDataMsg).toBeInTheDocument();
+  });
+  it('toggles pokemon selection and stops propagation on checkbox click', async () => {
+    vi.spyOn(api, 'fetchDetailedPokemons').mockResolvedValue({
+      pokemons: [{ name: 'BULBASAUR', description: 'Grass', image: 'img' }],
+      count: 1,
+    });
+
+    render(
+      <ThemeProvider>
+        <MemoryRouter initialEntries={['/?page=1']}>
+          <Routes>
+            <Route path="/" element={<ResultsContainer searchTerm="" />} />
+          </Routes>
+        </MemoryRouter>
+      </ThemeProvider>
+    );
+
+    const pokemonRow = await screen.findByText(/BULBASAUR/i);
+    expect(pokemonRow).toBeInTheDocument();
+
+    const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
+    expect(checkbox).toBeInTheDocument();
+
+    fireEvent.click(checkbox);
+
+    expect(checkbox.checked).toBe(true);
+
+    fireEvent.click(checkbox);
+    expect(checkbox.checked).toBe(false);
   });
 });

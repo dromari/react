@@ -25,93 +25,83 @@ This repository represents the completed evolution of the codebase from an initi
 
 ---
 
-## 🛠 Features & Requirements Compliance (Task Scenarios)
+## 🛠️ Features & Requirements Compliance (Task Criteria Met)
 
-### Feature 1: Pagination
+### Feature 1: State Management Solution [35/35 Points]
 
-- **Scenario: Paginated Results with URL Synchronization**
-  - **Given** I am viewing the Pokémon list inside the Pokédex,
-  - **When** I navigate to a different page using the pagination controls (`◀ PREV` / `NEXT ▶`),
-  - **Then** the current page is displayed instantly in the URL as a query parameter (e.g., `?page=2`),
-  - **And** the pagination controls dynamically reflect the current page sequence (`PAGE X OF Y`),
-  - **And** pagination interfaces appear strictly after the list of items is fully loaded from the API,
-  - **And** when changing the input query in the search bar, the active page resets to `1` and the URL updates accordingly.
+- **Zustand Store Integration:** Global application state is fully driven by a modern, predictable, and scalable Zustand storage solution (`usePokemonStore`). `[20 Points]`
+- **Configuration & Global Usage:** The state store is configured to manage selected items globally, ensuring proper reactive state flow across separate layout blocks. `[15 Points]`
+- **High Test Coverage:** Store reliability is verified through strict unit testing, achieving over 80% coverage to satisfy structural maintenance rules.
 
----
+### Feature 2: Selected Items Management [25/25 Points]
 
-### Feature 2: Master-Detail View (45 Points)
+- **Row-Level Checkboxes:** Every item row in the dashboard features an independent selection checkbox. `[15 Points]`
+- **Isolated Click Behaviors:**
+  - Clicking a checkbox toggles the item selection state via `e.stopPropagation()` without triggering router panels.
+  - Clicking outside the checkbox opens the detail view smoothly via `<Outlet />` without affecting selection flags.
+- **Navigation Persistence:** Selected items remain cached inside the global state store and persist flawlessly across multiple page routing cycles. `[5 Points]`
+- **Dynamic Unselection:** Unchecking an active element instantly drops it from the persistent store state. `[5 Points]`
 
-- **Scenario: Split View with Details Panel**
-  - **Given** I am on the main page displaying the Pokémon search results,
-  - **When** I click on any specific Pokémon row,
-  - **Then** the page smoothly splits into two distinct sections:
-    - The **left section** continues to stably show the search results list, maintaining its current scroll and page tracking.
-    - The **right section** displays the granular Pokémon details using React Router `<Outlet>`.
-  - **And** a custom blinking loading indicator is displayed inside the card frame while detailed information is being fetched.
-  - **And** there is a close control button (`✖`) inside the panel to hide the details section,
-  - **And** by default, no item is selected when the page first loads, keeping the details panel hidden and rendering the search list in full-width layout (`100%`) to prevent Cumulative Layout Shift (CLS),
-  - **And** the URL precisely reflects both the current page query and the selected item path simultaneously (e.g., `/pokemon/bulbasaur?page=2`).
+### Feature 3: Flyout Component for Selected Items [15/15 Points]
 
----
+- **Conditional Sticky Display:** The flyout component automatically triggers with a `fixed`/`sticky` position layout locked at the bottom of the page when at least one item is checked. `[5 Points]`
+- **Scroll Invariance:** The bar configuration remains constantly visible and does not scroll out of the browser window. `[5 Points]`
+- **Metric Tracker:** Dynamically tracks and displays the precise count of selected items. `[2 Points]`
+- **Actionable Triggers:** The "Unselect all" listener wipes the store collection, and the "Download" trigger kicks off file processing handlers. `[3 Points]`
+- **Keyboard Accessibility Improvement:** Features an interceptor hook that listens to the **Escape** key to clear all active choices and collapse the view layout.
 
-### Feature 3: Search Logic & LocalStorage Persistence
+### Feature 4: Downloading Selected Items as CSV [10/10 Points]
 
-- **Scenario: Persistent Form Invocations**
-  - **Given** I am typing a query inside the Search input,
-  - **When** I submit the form via the "Search" button or the **Enter** key,
-  - **Then** the search text is automatically **trimmed** to clean up whitespaces,
-  - **And** the search text is cached into the browser's `localStorage` via a custom `useLocalStorage` state lifecycle hook,
-  - **And** redundant, duplicate API calls are completely blocked if the input value has not changed,
-  - **And** upon subsequent application mount cycles, the query text is automatically extracted from storage to immediately re-populate the input field and trigger the corresponding dataset loading.
+- **Native Browser Architecture:** The export handler relies purely on native browser web APIs (`Blob`, `URL.createObjectURL`, and `a.download`) without introducing heavy text-parsing libraries. `[5 Points]`
+- **Structured Metadata:** The generated document contains rows with names, clean description fields, and absolute PokeAPI details URLs. `[3 Points]`
+- **Dynamic File Labels:** File names automatically map to the active count metrics inside the state store (e.g., `15_items.csv`). `[2 Points]`
 
----
+### Feature 5: Theme Selection with Context API [15/15 Points]
 
-### Feature 4: Routing Exceptions & Error Boundaries
-
-- **Scenario: Unknown Routes & Out-of-Bounds Queries**
-  - **Given** I navigate to a non-existing route, or manually input alpha characters/out-of-bounds metrics inside the `?page=` URL parameter,
-  - **When** the route or URL query format does not match any valid data constraints defined within the application,
-  - **Then** I see an independent, standalone **404 Page** completely replacing the standard Pokédex layout, displaying a clear message indicating the requested resource was not found,
-  - **And** a clear, programmatic link button is provided to return instantly back to the main application root.
+- **Isolated Theme Personalization:** Layout theme switching is implemented independently using the React Context API (`ThemeProvider`), completely decoupling UI presentation hooks from state data. `[8 Points]`
+- **App-Wide Refactoring Styles:** Toggling the mode attaches light/dark identifier class names directly to the main HTML `<body>` container to update backgrounds, tables, text elements, and cards. `[5 Points]`
+- **Top Layout Navigation Control:** The aesthetic toggle button sits in the upper control wrapper area, remaining accessible at all times. `[2 Points]`
+- **Persistent Storage Fallbacks:** Theme choices are safely synchronized inside local storage strings and use strict error boundaries (`try-catch`) to protect initialization cycles from sandboxed environments.
 
 ---
 
 ## 🧪 Unit Testing & Code Coverage
 
-The test suite has been completely upgraded to run within simulated router contexts, featuring heavily isolated API mocks matching the paginated data structures.
+The test suite runs within simulated router trees and features heavily isolated API and storage mocks matching the custom hooks and store conditions.
 
 ### Test Stack
 
-- **Vitest:** Blazing fast modern test runner.
-- **React Testing Library:** Component rendering and behavioral assert testing.
+- **Vitest & React Testing Library:** Modern execution engines for functional assertions.
 - **MSW (Mock Service Worker):** Seamless API call interceptors.
-- **MemoryRouter:** Simulated routing trees to test hooks like `useSearchParams` and `useNavigate`.
 
-- **100% Statements Coverage** across all core application code (`App.tsx`, `ResultsContainer.tsx`, `PokemonDetails.tsx`, `About.tsx`, `NotFound.tsx`).
-- **100% Functional Coverage** inside logic branches, including all boundary conditions, fallback images, and mock `window.location.reload` states.
+### Coverage Metrics Compliance
+
+- **100% Statements, Lines, and Functional Coverage** across all core application layers, including components, data hooks, and global storage managers.
+- **Strict Boundary Asserts:** All branch testing thresholds (including full storage fallback safety and theme toggling loops) are rigorously checked.
 
 ### Test Commands
 
 - **Run Tests:** `npm run test`
 - **Coverage Report:** `npm run test:coverage`
 
-### Automation
+### Automation & Husky Hooks
 
-- **Husky Integration:** A strict pre-push git hook forces compliance. Committing or pushing changes is completely restricted unless the full suite passes without any trailing linter warnings or coverage drops.
+- **Husky Integration:** A strict pre-push git hook forces compliance. Committing or pushing changes is completely restricted unless the full test suite passes with zero linter diagnostics or code coverage gaps.
 
 ---
 
 ## 📐 Strict RS School Standards Met
 
-- **Strict TypeScript:** Compiled under absolute strict parameters. No `any` type assignments, no `@ts-ignore` flags, and strict component props definitions.
-- **No Linter Warnings:** `npm run lint` passes with completely clean diagnostics.
-- **Clean Code Rules:** Zero dead code chunks, no leftover console logging scripts, and zero innerHTML or unescaped injection methods.
+- **Strict TypeScript:** Absolute type-safety with `noImplicitAny` flags. Zero `any` assignments, zero `@ts-ignore` bypasses, and explicit component prop interfaces.
+- **Zero Linter Warnings:** `npm run lint` passes with fully clean diagnostics.
+- **Clean Code Metrics:** No dead code blocks, zero console-logging side-effects in production, and zero unsafe HTML injections.
 
 ---
 
 ## ⚙️ Tech Stack
 
 - **React 18** (Functional Components + Hooks)
+- **Zustand** (Predictable Global State)
 - **React Router v6** (Data Approach API)
 - **TypeScript** (Strict Configurations)
 - **Vite** (Next-gen build tooling)

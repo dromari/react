@@ -1,9 +1,8 @@
 import { http, HttpResponse } from 'msw';
-
-const BASE_URL = 'https://pokeapi.co/api/v2/pokemon';
+import { BASE_URL } from '../constants/pokemonConstants';
 
 export const handlers = [
-  http.get('https://pokeapi.co/', () => {
+  http.get(BASE_URL, () => {
     return HttpResponse.json({ status: 'ok' });
   }),
 
