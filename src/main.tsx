@@ -9,6 +9,19 @@ import NotFound from './components/NotFound/NotFound';
 import PokemonDetails from './components/PokemonDetails/PokemonDetails';
 import ThemeProvider from './context/ThemeProvider.tsx';
 import './main.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const cacheTTL = Number(import.meta.env.VITE_CACHE_TTL) || 300000;
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: cacheTTL,
+      gcTime: cacheTTL,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const router = createHashRouter([
   {
@@ -41,11 +54,13 @@ const rootElement = document.getElementById('root');
 if (rootElement) {
   createRoot(rootElement).render(
     <StrictMode>
-      <ThemeProvider>
-        <ErrorBoundary>
-          <RouterProvider router={router} />
-        </ErrorBoundary>
-      </ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <ErrorBoundary>
+            <RouterProvider router={router} />
+          </ErrorBoundary>
+        </ThemeProvider>
+      </QueryClientProvider>
     </StrictMode>
   );
 }

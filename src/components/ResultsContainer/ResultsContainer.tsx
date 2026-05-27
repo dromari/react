@@ -1,21 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { fetchDetailedPokemons } from '../../services/api';
 import styles from './Results.module.css';
-import {
-  PokemonListItem,
-  ResultsContainerProps,
-} from '../../types/pokemonTypes';
+import { ResultsContainerProps } from '../../types/pokemonTypes';
 import { ITEMS_PER_PAGE } from '../../constants/pokemonConstants';
 import { usePokemonStore } from '../../store/usePokemonStore';
+import { usePokemons } from '../../hooks/usePokemonQueries';
 
 export default function ResultsContainer({
   searchTerm,
 }: ResultsContainerProps) {
-  const [pokemons, setPokemons] = useState<PokemonListItem[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { selectedPokemons, togglePokemon } = usePokemonStore();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -24,52 +17,35 @@ export default function ResultsContainer({
   const isPageValid = pageParam === null || /^\d+$/.test(pageParam);
   const currentPage = isPageValid ? parseInt(pageParam || '1', 10) : 1;
 
+  const { data, isLoading, error } = usePokemons(
+    searchTerm,
+    currentPage,
+    ITEMS_PER_PAGE
+  );
+
+  const pokemons = data?.pokemons || [];
+  const totalCount = data?.count || 0;
+  const errorMessage = error?.message || null;
+
   useEffect(() => {
-    const loadData = async () => {
-      if (!isPageValid) {
+    if (!isPageValid) {
+      navigate('/404', { replace: true });
+      return;
+    }
+
+    if (data && 'pokemons' in data) {
+      const maxPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+      const isSpecificSearch = !!(searchTerm && searchTerm.trim());
+
+      if (
+        !isSpecificSearch &&
+        ((currentPage > maxPages && maxPages > 0) || currentPage < 1) &&
+        searchTerm !== 'error'
+      ) {
         navigate('/404', { replace: true });
-        return;
       }
-
-      setIsLoading(true);
-      setErrorMessage(null);
-
-      const result = await fetchDetailedPokemons(
-        searchTerm,
-        currentPage,
-        ITEMS_PER_PAGE
-      );
-
-      if (result && 'isError' in result) {
-        setErrorMessage(result.message);
-        setPokemons([]);
-        setTotalCount(0);
-        setIsLoading(false);
-        return;
-      } else if ('pokemons' in result) {
-        setPokemons(result.pokemons);
-        setTotalCount(result.count);
-
-        const maxPages = Math.ceil(result.count / ITEMS_PER_PAGE);
-
-        const isSpecificSearch = !!(searchTerm && searchTerm.trim());
-
-        if (
-          !isSpecificSearch &&
-          ((currentPage > maxPages && maxPages > 0) || currentPage < 1) &&
-          searchTerm !== 'error'
-        ) {
-          setIsLoading(false);
-          navigate('/404', { replace: true });
-          return;
-        }
-      }
-
-      setIsLoading(false);
-    };
-
-    loadData();
-  }, [searchTerm, currentPage, isPageValid, navigate]);
+    }
+  }, [data, totalCount, currentPage, isPageValid, searchTerm, navigate]);
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 

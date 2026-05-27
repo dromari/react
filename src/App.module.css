@@ -113,7 +113,8 @@
 }
 
 .aboutButton,
-.themeButton {
+.themeButton,
+.refreshButton {
   width: 70px;
   height: 30px;
   position: absolute;
@@ -137,25 +138,34 @@
   color: #3b4cca;
 }
 
+.refreshButton {
+  color: #3b4cca;
+  right: 250px;
+  width: 90px;
+}
+
 .navLinkAbout {
   color: #3b4cca;
   text-decoration: none;
 }
 
 .aboutButton:hover,
-.themeButton:hover {
+.themeButton:hover,
+.refreshButton:hover {
   transform: scale(1.05);
   transition: transform 0.3s;
 }
 
 .mainWrapper.darkTheme .aboutButton,
-.mainWrapper.darkTheme .themeButton {
+.mainWrapper.darkTheme .themeButton,
+.mainWrapper.darkTheme .refreshButton {
   background-color: #3b4cca;
   border-color: #ffcb05;
 }
 
 .mainWrapper.darkTheme .navLinkAbout,
-.mainWrapper.darkTheme .themeButton {
+.mainWrapper.darkTheme .themeButton,
+.mainWrapper.darkTheme .refreshButton {
   color: #ffcb05;
 }
 

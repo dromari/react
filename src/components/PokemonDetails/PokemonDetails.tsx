@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { fetchDetailedPokemons } from '../../services/api';
 import styles from './PokemonDetails.module.css';
-import { PokemonListItem } from '../../types/pokemonTypes';
+import { usePokemonDetail } from '../../hooks/usePokemonQueries';
 
 export default function PokemonDetails() {
   const { detailsId } = useParams<{ detailsId: string }>();
@@ -10,12 +9,14 @@ export default function PokemonDetails() {
 
   const [searchParams] = useSearchParams();
   const pageParam = searchParams.get('page');
-
   const isPageValid = pageParam === null || /^\d+$/.test(pageParam);
 
-  const [pokemon, setPokemon] = useState<PokemonListItem | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { data, isLoading, isError } = usePokemonDetail(detailsId);
+
+  const pokemon =
+    data && 'pokemons' in data && data.pokemons.length > 0
+      ? data.pokemons[0]
+      : null;
 
   useEffect(() => {
     if (!isPageValid) {
@@ -23,36 +24,10 @@ export default function PokemonDetails() {
       return;
     }
 
-    if (!detailsId) {
-      setPokemon(null);
-      setError(null);
-      setIsLoading(false);
-      return;
+    if (isError || (data && !pokemon)) {
+      navigate('/404', { replace: true });
     }
-
-    const getDetails = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      const result = await fetchDetailedPokemons(detailsId);
-
-      if (result && 'isError' in result) {
-        setIsLoading(false);
-        navigate('/404', { replace: true });
-        return;
-      } else if (result && 'pokemons' in result && result.pokemons.length > 0) {
-        setPokemon(result.pokemons[0]);
-      } else {
-        setIsLoading(false);
-        navigate('/404', { replace: true });
-        return;
-      }
-
-      setIsLoading(false);
-    };
-
-    getDetails();
-  }, [detailsId, isPageValid, navigate]);
+  }, [isError, data, pokemon, isPageValid, navigate]);
 
   const handleClose = () => {
     const currentParams = searchParams.toString();
@@ -78,7 +53,7 @@ export default function PokemonDetails() {
         <div className={styles.loadingText}>LOADING DETAILS...</div>
       )}
 
-      {!isLoading && !error && pokemon && (
+      {!isLoading && !isError && pokemon && (
         <div className={styles.content}>
           <h2 className={styles.pokemonTitle}>{pokemon.name}</h2>
           <div className={styles.imageContainer}>
