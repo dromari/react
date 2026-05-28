@@ -20,6 +20,10 @@
   box-shadow: 10px 10px 0px #111111;
 }
 
+.mainWrapper.hasFlyout {
+  padding-bottom: 90px;
+}
+
 .title {
   position: absolute;
   right: 50px;
@@ -193,4 +197,110 @@
 .rightColumn {
   width: 45%;
   flex-shrink: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .mainWrapper {
+    margin: 10px;
+    padding: 20px;
+    padding-top: 100px;
+  }
+
+  .mainWrapper.hasFlyout {
+    padding-bottom: 110px;
+  }
+
+  .splitLayout {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .leftColumn,
+  .rightColumn {
+    width: 100%;
+  }
+
+  .screenInner {
+    margin-top: 2rem;
+  }
+
+  .title {
+    position: static;
+    display: block;
+    text-align: center;
+    margin: 15px auto 0 auto;
+    font-size: 1.6rem;
+  }
+
+  .aboutButton {
+    right: 15px;
+    top: 15px;
+  }
+
+  .themeButton {
+    right: 95px;
+    top: 15px;
+  }
+
+  .refreshButton {
+    right: 175px;
+    top: 15px;
+  }
+
+  .smallLights {
+    left: 85px;
+    top: 35px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .mainWrapper {
+    margin: 0;
+    border-radius: 0;
+    border-width: 3px;
+    padding: 10px;
+    padding-top: 130px;
+  }
+
+  .aboutButton,
+  .themeButton,
+  .refreshButton {
+    font-size: 0.7rem;
+    padding: 5px 4px;
+    height: 28px;
+    top: 85px;
+  }
+
+  .aboutButton {
+    width: 55px;
+    right: 10px;
+  }
+
+  .themeButton {
+    width: 55px;
+    right: 70px;
+  }
+
+  .refreshButton {
+    width: 65px;
+    right: 130px;
+  }
+
+  .title {
+    font-size: 1.3rem;
+  }
+
+  .errorButton {
+    width: 45px;
+    height: 45px;
+    top: 10px;
+    left: 10px;
+    border-width: 3px;
+    padding: 0;
+  }
+
+  .errorButton::after {
+    width: 10px;
+    height: 5px;
+  }
 }

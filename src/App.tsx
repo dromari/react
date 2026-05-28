@@ -5,6 +5,7 @@ import SearchBar from './components/SearchBar/SearchBar';
 import ResultsContainer from './components/ResultsContainer/ResultsContainer';
 import Flyout from './components/Flyout/Flyout';
 import { useLocalStorage } from './hooks/useLocalStorage';
+import { usePokemonStore } from './store/usePokemonStore';
 
 import styles from './App.module.css';
 import { useTheme } from './hooks/useTheme';
@@ -16,6 +17,8 @@ export default function App() {
   const navigate = useNavigate();
   const { detailsId } = useParams<{ detailsId: string }>();
   const { theme, toggleTheme } = useTheme();
+
+  const { selectedPokemons } = usePokemonStore();
 
   const queryClient = useQueryClient();
 
@@ -43,7 +46,11 @@ export default function App() {
 
   return (
     <div
-      className={`${styles.mainWrapper} ${theme === 'dark' ? styles.darkTheme : ''}`}
+      className={`
+        ${styles.mainWrapper} 
+        ${theme === 'dark' ? styles.darkTheme : ''} 
+        ${selectedPokemons.length > 0 ? styles.hasFlyout : ''}
+      `}
       onClick={handleMainPanelClick}
     >
       <button
