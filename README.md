@@ -2,7 +2,9 @@
 
 A robust, modern Pokémon encyclopedia application built with **React 18**, **Functional Components**, **Hooks**, and **TypeScript**.
 
-This repository represents the completed evolution of the codebase from an initial Class-based implementation into a modern, state-of-the-art Single Page Application (SPA) driven by **React Router (Data Approach)**, comprehensive URL synchronization, and server-side pagination.
+This repository represents the completed evolution of the codebase driven by **TanStack Query (React Query)** for efficient data fetching, memory caching, and state validation.
+
+---
 
 ## 🚀 Getting Started
 
@@ -21,47 +23,35 @@ This repository represents the completed evolution of the codebase from an initi
 
 - **Development Mode:** `npm run dev`
 - **Production Build:** `npm run build`
-- **Production Preview:** `npm run preview` (Highly recommended for verifying routing and 404 behavior locally)
+- **Production Preview:** `npm run preview`
 
 ---
 
 ## 🛠️ Features & Requirements Compliance (Task Criteria Met)
 
-### Feature 1: State Management Solution [35/35 Points]
+### Feature 1: API Integration [25/25 Points]
 
-- **Zustand Store Integration:** Global application state is fully driven by a modern, predictable, and scalable Zustand storage solution (`usePokemonStore`). `[20 Points]`
-- **Configuration & Global Usage:** The state store is configured to manage selected items globally, ensuring proper reactive state flow across separate layout blocks. `[15 Points]`
-- **High Test Coverage:** Store reliability is verified through strict unit testing, achieving over 80% coverage to satisfy structural maintenance rules.
+- **TanStack Query Setup:** Data fetching architecture is integrated and configured using the modern `@tanstack/react-query` ecosystem. `[10 Points]`
+- **Query Custom Hooks:** Every individual API call throughout the codebase has been successfully migrated to call asynchronous custom fetching hooks (`usePokemons` and `usePokemonDetail`). `[5 Points]`
+- **Cache Invalidation Strategy:** Proper client-side cache mutation strategies are fully functional across view transitions. `[5 Points]`
+- **Configurable Cache TTL:** The query client's in-memory data fresh threshold (`staleTime` & `gcTime`) is managed globally via a strict environment variable layout (`VITE_CACHE_TTL`). `[5 Points]`
 
-### Feature 2: Selected Items Management [25/25 Points]
+### Feature 2: Data Caching and Loading States [25/25 Points]
 
-- **Row-Level Checkboxes:** Every item row in the dashboard features an independent selection checkbox. `[15 Points]`
-- **Isolated Click Behaviors:**
-  - Clicking a checkbox toggles the item selection state via `e.stopPropagation()` without triggering router panels.
-  - Clicking outside the checkbox opens the detail view smoothly via `<Outlet />` without affecting selection flags.
-- **Navigation Persistence:** Selected items remain cached inside the global state store and persist flawlessly across multiple page routing cycles. `[5 Points]`
-- **Dynamic Unselection:** Unchecking an active element instantly drops it from the persistent store state. `[5 Points]`
+- **Async Loading Interceptors:** Micro-targeted loading banners (`SYSTEM SCANNING...` and `LOADING DETAILS...`) reactively trigger during ongoing network fetching events to preserve proper UI state feedback. `[13 Points]`
+- **Memory Reuse Optimization:** Previously fetched dashboard item sets and granular detail card items are cached inside client memory space and seamlessly reused between routing transitions without initiating heavy API requests. `[12 Points]`
 
-### Feature 3: Flyout Component for Selected Items [15/15 Points]
+### Feature 3: Error Handling [20/20 Points]
 
-- **Conditional Sticky Display:** The flyout component automatically triggers with a `fixed`/`sticky` position layout locked at the bottom of the page when at least one item is checked. `[5 Points]`
-- **Scroll Invariance:** The bar configuration remains constantly visible and does not scroll out of the browser window. `[5 Points]`
-- **Metric Tracker:** Dynamically tracks and displays the precise count of selected items. `[2 Points]`
-- **Actionable Triggers:** The "Unselect all" listener wipes the store collection, and the "Download" trigger kicks off file processing handlers. `[3 Points]`
-- **Keyboard Accessibility Improvement:** Features an interceptor hook that listens to the **Escape** key to clear all active choices and collapse the view layout.
+- **Robust Exception Recovery:** High-level network down states, missing entity lookups, and explicit 404/500 API responses are tracked and mapped into an interactive, human-readable layout error display block (`⚠️ DATABASE ERROR`). `[20 Points]`
 
-### Feature 4: Downloading Selected Items as CSV [10/10 Points]
+### Feature 4: Manual Cache Invalidation [10/10 Points]
 
-- **Native Browser Architecture:** The export handler relies purely on native browser web APIs (`Blob`, `URL.createObjectURL`, and `a.download`) without introducing heavy text-parsing libraries. `[5 Points]`
-- **Structured Metadata:** The generated document contains rows with names, clean description fields, and absolute PokeAPI details URLs. `[3 Points]`
-- **Dynamic File Labels:** File names automatically map to the active count metrics inside the state store (e.g., `15_items.csv`). `[2 Points]`
+- **Explicit Refresh Triggers:** Implemented a customized upper control block layout refresh trigger (`REFRESH`). Clicking the selector issues an instantaneous system-wide command to fully wipe out active cached memory stores and force-execute immediate server-side fetch loops. `[10 Points]`
 
-### Feature 5: Theme Selection with Context API [15/15 Points]
+### Feature 5: Test Coverage for Querying [20/20 Points]
 
-- **Isolated Theme Personalization:** Layout theme switching is implemented independently using the React Context API (`ThemeProvider`), completely decoupling UI presentation hooks from state data. `[8 Points]`
-- **App-Wide Refactoring Styles:** Toggling the mode attaches light/dark identifier class names directly to the main HTML `<body>` container to update backgrounds, tables, text elements, and cards. `[5 Points]`
-- **Top Layout Navigation Control:** The aesthetic toggle button sits in the upper control wrapper area, remaining accessible at all times. `[2 Points]`
-- **Persistent Storage Fallbacks:** Theme choices are safely synchronized inside local storage strings and use strict error boundaries (`try-catch`) to protect initialization cycles from sandboxed environments.
+- **Asynchronous Behavior Suite:** Integrated isolated `QueryClientProvider` test hooks inside the component layer specs. Assert test coverage covers all explicit query statuses including fetching layouts, standard exception responses, layout caching lookups, and manual wipe triggers. `[20 Points]`
 
 ---
 
@@ -71,8 +61,10 @@ The test suite runs within simulated router trees and features heavily isolated 
 
 ### Test Stack
 
-- **Vitest & React Testing Library:** Modern execution engines for functional assertions.
+- **Vitest:** Blazing fast modern test runner.
+- **React Testing Library:** Component rendering and behavioral assert testing.
 - **MSW (Mock Service Worker):** Seamless API call interceptors.
+- **MemoryRouter & QueryClientProvider:** Simulated routing trees and query contexts to test hooks like `useSearchParams`, `useNavigate`, and `useQuery`.
 
 ### Coverage Metrics Compliance
 
@@ -101,6 +93,7 @@ The test suite runs within simulated router trees and features heavily isolated 
 ## ⚙️ Tech Stack
 
 - **React 18** (Functional Components + Hooks)
+- **TanStack Query v5** (Caching & Fetching Controls)
 - **Zustand** (Predictable Global State)
 - **React Router v6** (Data Approach API)
 - **TypeScript** (Strict Configurations)

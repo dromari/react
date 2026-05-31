@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from '../App';
 import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
 import ThemeProvider from '../context/ThemeProvider';
+import { usePokemonStore } from '../store/usePokemonStore';
 
 describe('App Component Integration', () => {
   beforeEach(() => {
@@ -190,5 +191,36 @@ describe('App Component Integration', () => {
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
       queryKey: ['pokemons'],
     });
+  });
+
+  it('applies hasFlyout style class when there are selected pokemons in the store', () => {
+    usePokemonStore.setState({
+      selectedPokemons: [
+        {
+          name: 'PIKACHU',
+          description: 'Electric',
+          image: 'url',
+          detailsUrl: 'url',
+        },
+      ],
+    });
+
+    const testQueryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    render(
+      <QueryClientProvider client={testQueryClient}>
+        <ThemeProvider>
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        </ThemeProvider>
+      </QueryClientProvider>
+    );
+
+    const mainWrapper = screen.getByText(/Pokédex v1.0/i).closest('div');
+
+    expect(mainWrapper?.className).toContain('hasFlyout');
   });
 });
