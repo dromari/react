@@ -1,9 +1,11 @@
 import { useState, MouseEvent } from 'react';
 import { Link, Outlet, useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import SearchBar from './components/SearchBar/SearchBar';
 import ResultsContainer from './components/ResultsContainer/ResultsContainer';
 import Flyout from './components/Flyout/Flyout';
 import { useLocalStorage } from './hooks/useLocalStorage';
+import { usePokemonStore } from './store/usePokemonStore';
 
 import styles from './App.module.css';
 import { useTheme } from './hooks/useTheme';
@@ -14,8 +16,11 @@ export default function App() {
 
   const navigate = useNavigate();
   const { detailsId } = useParams<{ detailsId: string }>();
-
   const { theme, toggleTheme } = useTheme();
+
+  const { selectedPokemons } = usePokemonStore();
+
+  const queryClient = useQueryClient();
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -23,6 +28,10 @@ export default function App() {
 
   const handleThrowError = () => {
     setShouldThrowError(true);
+  };
+
+  const handleRefreshCache = () => {
+    queryClient.invalidateQueries({ queryKey: ['pokemons'] });
   };
 
   const handleMainPanelClick = (e: MouseEvent<HTMLDivElement>) => {
@@ -37,9 +46,21 @@ export default function App() {
 
   return (
     <div
-      className={`${styles.mainWrapper} ${theme === 'dark' ? styles.darkTheme : ''}`}
+      className={`
+        ${styles.mainWrapper} 
+        ${theme === 'dark' ? styles.darkTheme : ''} 
+        ${selectedPokemons.length > 0 ? styles.hasFlyout : ''}
+      `}
       onClick={handleMainPanelClick}
     >
+      <button
+        className={styles.refreshButton}
+        onClick={handleRefreshCache}
+        title="Refresh Cache"
+      >
+        REFRESH
+      </button>
+
       <button
         className={styles.themeButton}
         onClick={toggleTheme}

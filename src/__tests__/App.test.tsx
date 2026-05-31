@@ -1,9 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from '../App';
 import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
 import ThemeProvider from '../context/ThemeProvider';
+import { usePokemonStore } from '../store/usePokemonStore';
 
 describe('App Component Integration', () => {
   beforeEach(() => {
@@ -11,14 +13,33 @@ describe('App Component Integration', () => {
     vi.clearAllMocks();
   });
 
+  const createTestQueryClient = () =>
+    new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    });
+
+  const renderWithProviders = (ui: React.ReactElement) => {
+    const testQueryClient = createTestQueryClient();
+    return {
+      testQueryClient,
+      ...render(
+        <QueryClientProvider client={testQueryClient}>
+          <ThemeProvider>{ui}</ThemeProvider>
+        </QueryClientProvider>
+      ),
+    };
+  };
+
   it('loads with initial value from localStorage', () => {
     localStorage.setItem('pokeSearch', '"pikachu"');
-    render(
-      <ThemeProvider>
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
-      </ThemeProvider>
+    renderWithProviders(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
     );
 
     const input = screen.getByPlaceholderText(
@@ -28,12 +49,10 @@ describe('App Component Integration', () => {
   });
 
   it('updates state and localStorage on search', () => {
-    render(
-      <ThemeProvider>
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
-      </ThemeProvider>
+    renderWithProviders(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
     );
     const input = screen.getByPlaceholderText(/Search Pokemon.../i);
     const button = screen.getByRole('button', { name: /search/i });
@@ -46,15 +65,18 @@ describe('App Component Integration', () => {
 
   it('throws an error when TEST button is clicked', () => {
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const testQueryClient = createTestQueryClient();
 
     render(
-      <ThemeProvider>
-        <ErrorBoundary>
-          <MemoryRouter>
-            <App />
-          </MemoryRouter>
-        </ErrorBoundary>
-      </ThemeProvider>
+      <QueryClientProvider client={testQueryClient}>
+        <ThemeProvider>
+          <ErrorBoundary>
+            <MemoryRouter>
+              <App />
+            </MemoryRouter>
+          </ErrorBoundary>
+        </ThemeProvider>
+      </QueryClientProvider>
     );
 
     const errorButton = screen.getByRole('button', { name: /test/i });
@@ -65,21 +87,17 @@ describe('App Component Integration', () => {
   });
 
   it('triggers navigate on background click and blocks propagation inside right column', () => {
-    render(
-      <ThemeProvider>
-        <MemoryRouter initialEntries={['/pokemon/pikachu']}>
-          <Routes>
-            <Route path="/" element={<App />}>
-              <Route
-                path="pokemon/:detailsId"
-                element={
-                  <div data-testid="details-content">Details Outlet</div>
-                }
-              />
-            </Route>
-          </Routes>
-        </MemoryRouter>
-      </ThemeProvider>
+    renderWithProviders(
+      <MemoryRouter initialEntries={['/pokemon/pikachu']}>
+        <Routes>
+          <Route path="/" element={<App />}>
+            <Route
+              path="pokemon/:detailsId"
+              element={<div data-testid="details-content">Details Outlet</div>}
+            />
+          </Route>
+        </Routes>
+      </MemoryRouter>
     );
 
     const detailsView = screen.getByTestId('details-content');
@@ -101,23 +119,20 @@ describe('App Component Integration', () => {
       throw new Error('Quota Exceeded');
     });
 
-    render(
-      <ThemeProvider>
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
-      </ThemeProvider>
+    renderWithProviders(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
     );
 
     expect(screen.getByText(/Pokédex v1.0/i)).toBeInTheDocument();
   });
+
   it('toggles theme correctly when theme button is clicked', () => {
-    render(
-      <ThemeProvider>
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
-      </ThemeProvider>
+    renderWithProviders(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
     );
 
     const themeButton = screen.getByRole('button', { name: /DARK/i });
@@ -136,12 +151,10 @@ describe('App Component Integration', () => {
       throw new Error('Security Block Error');
     });
 
-    render(
-      <ThemeProvider>
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
-      </ThemeProvider>
+    renderWithProviders(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
     );
 
     expect(screen.getByRole('button', { name: /DARK/i })).toBeInTheDocument();
@@ -152,14 +165,62 @@ describe('App Component Integration', () => {
 
     localStorage.setItem('app_theme', 'dark');
 
-    render(
-      <ThemeProvider>
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
-      </ThemeProvider>
+    renderWithProviders(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
     );
 
     expect(screen.getByRole('button', { name: /LIGHT/i })).toBeInTheDocument();
+  });
+
+  it('triggers query cache invalidation when REFRESH button is clicked', () => {
+    const { testQueryClient } = renderWithProviders(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
+
+    const invalidateQueriesSpy = vi.spyOn(testQueryClient, 'invalidateQueries');
+
+    const refreshButton = screen.getByRole('button', { name: /REFRESH/i });
+    expect(refreshButton).toBeInTheDocument();
+
+    fireEvent.click(refreshButton);
+
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: ['pokemons'],
+    });
+  });
+
+  it('applies hasFlyout style class when there are selected pokemons in the store', () => {
+    usePokemonStore.setState({
+      selectedPokemons: [
+        {
+          name: 'PIKACHU',
+          description: 'Electric',
+          image: 'url',
+          detailsUrl: 'url',
+        },
+      ],
+    });
+
+    const testQueryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    render(
+      <QueryClientProvider client={testQueryClient}>
+        <ThemeProvider>
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        </ThemeProvider>
+      </QueryClientProvider>
+    );
+
+    const mainWrapper = screen.getByText(/Pokédex v1.0/i).closest('div');
+
+    expect(mainWrapper?.className).toContain('hasFlyout');
   });
 });
