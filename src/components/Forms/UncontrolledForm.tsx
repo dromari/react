@@ -38,15 +38,16 @@ export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const currentForm = e.currentTarget;
     setErrors({});
 
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(currentForm);
     const rawData = {
       name: formData.get('name') as string,
       age: formData.get('age') ? Number(formData.get('age')) : NaN,
       email: formData.get('email') as string,
       gender: formData.get('gender') as string,
-      country: countryQuery,
+      country: formData.get('country') as string,
       password: formData.get('password') as string,
       confirmPassword: formData.get('confirmPassword') as string,
       terms: formData.get('terms') === 'on',
@@ -87,7 +88,6 @@ export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({
     }
 
     if (result.success) {
-      const formElement = e.currentTarget;
       addSubmission({
         name: rawData.name,
         age: rawData.age,
@@ -96,8 +96,8 @@ export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({
         country: rawData.country,
         image: base64Image,
       });
-      if (formElement) {
-        formElement.reset();
+      if (currentForm) {
+        currentForm.reset();
       }
 
       setCountryQuery('');
@@ -147,8 +147,8 @@ export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({
         </label>
         <input
           id="unc-country"
+          name="country"
           type="text"
-          value={countryQuery}
           onChange={(e) => {
             setCountryQuery(e.target.value);
             setShowDropdown(true);

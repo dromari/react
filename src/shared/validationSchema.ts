@@ -10,7 +10,7 @@ export const createFormSchema = (allowedCountries: string[]) =>
         .refine((val) => {
           if (!val) return false;
           return val[0] === val[0].toUpperCase();
-        }, 'The first letter must be capitalized'),
+        }, 'First letter must be uppercase'),
 
       age: z
         .number({ message: 'Age must be a number' })
@@ -30,7 +30,7 @@ export const createFormSchema = (allowedCountries: string[]) =>
           (val) => allowedCountries.includes(val),
           'Select a country from the list provided'
         ),
-      password: z.string().min(4, 'The password is too shortй'),
+      password: z.string().min(4, 'The password is too short'),
       confirmPassword: z.string(),
       terms: z.literal(true, {
         message: 'You must accept the terms and conditions',
