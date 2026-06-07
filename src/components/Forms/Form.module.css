@@ -6,7 +6,9 @@
 
 .autocompleteContainer {
   position: relative;
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .autocompleteLabel {
@@ -18,12 +20,15 @@
 }
 
 .autocompleteInput {
+  display: block;
+  width: 100%;
   padding: 0.5rem;
   border-radius: 0.25rem;
   border: 1px solid #d1d5db;
   outline: none;
   font-size: 0.875rem;
   color: #1f2937;
+  box-sizing: border-box;
   transition:
     border-color 0.2s,
     box-shadow 0.2s;
@@ -41,6 +46,8 @@
 .dropdown {
   position: absolute;
   z-index: 10;
+  top: 3.18rem;
+  left: 0;
   width: 100%;
   background-color: white;
   border: 1px solid #d1d5db;
@@ -68,10 +75,11 @@
 .errorText {
   color: #ef4444;
   font-size: 0.75rem;
+  margin-top: 0.25rem;
   min-height: 1.25rem;
-  margin-bottom: 0;
+  line-height: 1.25rem;
+  display: block;
 }
-
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -97,6 +105,7 @@
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1rem;
+  margin-top: 0.5rem;
 }
 
 .checkboxLabel {

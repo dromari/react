@@ -1,15 +1,15 @@
 import React, { useState, useRef } from 'react';
-import { useFormStore } from '../shared/store';
+import { useFormStore } from '../../shared/store';
 import {
   convertToBase64,
   checkPasswordStrength,
   PasswordStrength,
-} from '../shared/utils';
-import { createFormSchema } from '../shared/validationSchema';
-import { Input } from './ui/Input';
-import { Select } from './ui/Select';
-import { Button } from './ui/Button';
-import styles from './UncontrolledForm.module.css';
+} from '../../shared/utils';
+import { createFormSchema } from '../../shared/validationSchema';
+import { Input } from '../ui/Input';
+import { Select } from '../ui/Select';
+import { Button } from '../ui/Button';
+import styles from './Form.module.css';
 
 interface UncontrolledFormProps {
   onSuccess: () => void;
@@ -58,7 +58,9 @@ export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({
 
     if (!result.success) {
       result.error.issues.forEach((issue) => {
-        const path = String(issue.path[0]);
+        const path = Array.isArray(issue.path)
+          ? String(issue.path[0])
+          : String(issue.path);
         if (!newErrors[path]) newErrors[path] = issue.message;
       });
     }
@@ -85,6 +87,7 @@ export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({
     }
 
     if (result.success) {
+      const formElement = e.currentTarget;
       addSubmission({
         name: rawData.name,
         age: rawData.age,
@@ -93,8 +96,10 @@ export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({
         country: rawData.country,
         image: base64Image,
       });
+      if (formElement) {
+        formElement.reset();
+      }
 
-      e.currentTarget.reset();
       setCountryQuery('');
       setPassStrength(null);
       onSuccess();
@@ -138,7 +143,7 @@ export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({
 
       <div ref={autocompleteRef} className={styles.autocompleteContainer}>
         <label htmlFor="unc-country" className={styles.autocompleteLabel}>
-          Страна
+          Country
         </label>
         <input
           id="unc-country"
@@ -149,7 +154,7 @@ export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({
             setShowDropdown(true);
           }}
           onFocus={() => setShowDropdown(true)}
-          placeholder="Start typing country..."
+          placeholder="Select from the list..."
           className={`${styles.autocompleteInput} ${errors.country ? styles.inputError : ''}`}
           autoComplete="off"
         />

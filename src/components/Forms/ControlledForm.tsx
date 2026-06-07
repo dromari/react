@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useFormStore } from '../shared/store';
-import { createFormSchema } from '../shared/validationSchema';
+import { useFormStore } from '../../shared/store';
+import { createFormSchema } from '../../shared/validationSchema';
 import {
   convertToBase64,
   checkPasswordStrength,
   PasswordStrength,
-} from '../shared/utils';
+} from '../../shared/utils';
 import { z } from 'zod';
-import { Input } from './ui/Input';
-import { Select } from './ui/Select';
-import { Button } from './ui/Button';
-import styles from './ControlledForm.module.css';
+import { Input } from '../ui/Input';
+import { Select } from '../ui/Select';
+import { Button } from '../ui/Button';
+import styles from './Form.module.css';
 
 interface ControlledFormProps {
   onSuccess: () => void;
@@ -21,9 +21,7 @@ interface ControlledFormProps {
 const schema = createFormSchema(useFormStore.getState().countries);
 type FormValues = z.infer<typeof schema>;
 
-export const ControlledForm: React.FC<ControlledFormProps> = ({
-  onSuccess,
-}) => {
+export const ControlledForm = ({ onSuccess }: ControlledFormProps) => {
   const { countries, addSubmission } = useFormStore();
   const [passStrength, setPassStrength] = useState<PasswordStrength | null>(
     null
@@ -151,9 +149,10 @@ export const ControlledForm: React.FC<ControlledFormProps> = ({
             ))}
           </ul>
         )}
-        {errors.country && (
-          <p className={styles.errorText}>{errors.country.message}</p>
-        )}
+
+        <p className={styles.errorText}>
+          {errors.country?.message || '\u00A0'}
+        </p>
       </div>
 
       <Input
@@ -162,6 +161,7 @@ export const ControlledForm: React.FC<ControlledFormProps> = ({
         type="file"
         accept=".png,.jpeg,.jpg"
         {...register('image')}
+        error={errors.image?.message || '\u00A0'}
       />
 
       <div className={styles.row}>
@@ -195,14 +195,8 @@ export const ControlledForm: React.FC<ControlledFormProps> = ({
           I agree to the terms of use
         </label>
       </div>
-      {errors.terms && (
-        <p
-          className={styles.errorText}
-          style={{ marginTop: '-0.5rem', marginBottom: '0.5rem' }}
-        >
-          {errors.terms.message}
-        </p>
-      )}
+
+      <p className={styles.errorText}>{errors.terms?.message || '\u00A0'}</p>
 
       <Button type="submit" disabled={!isValid}>
         Submit (React Hook Form)

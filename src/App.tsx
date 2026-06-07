@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Modal } from './components/Modal';
-import { UncontrolledForm } from './components/UncontrolledForm';
-import { ControlledForm } from './components/ControlledForm';
+import { Modal } from './components/Modal/Modal';
+import { UncontrolledForm } from './components/Forms/UncontrolledForm';
+import { ControlledForm } from './components/Forms/ControlledForm';
 import { FormSubmission, useFormStore } from './shared/store';
 import styles from './App.module.css';
 

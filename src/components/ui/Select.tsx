@@ -23,7 +23,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           {label}
         </label>
         <select id={selectId} ref={ref} className={selectClassName} {...props}>
-          <option value="">Выберите...</option>
+          <option value="">Select...</option>
           {options.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
