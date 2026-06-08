@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useFormStore } from '../../shared/store';
 import {
   convertToBase64,
@@ -28,9 +28,24 @@ export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({
   const [showDropdown, setShowDropdown] = useState(false);
   const autocompleteRef = useRef<HTMLDivElement>(null);
 
-  const filteredCountries = countries.filter((c) =>
-    c.toLowerCase().includes(countryQuery.toLowerCase())
-  );
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        autocompleteRef.current &&
+        !autocompleteRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const filteredCountries = countries.includes(countryQuery)
+    ? countries
+    : countries.filter((c) =>
+        c.toLowerCase().includes(countryQuery.toLowerCase())
+      );
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassStrength(checkPasswordStrength(e.target.value));
@@ -149,11 +164,13 @@ export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({
           id="unc-country"
           name="country"
           type="text"
+          value={countryQuery}
           onChange={(e) => {
             setCountryQuery(e.target.value);
             setShowDropdown(true);
           }}
           onFocus={() => setShowDropdown(true)}
+          onClick={() => setShowDropdown(true)}
           placeholder="Select from the list..."
           className={`${styles.autocompleteInput} ${errors.country ? styles.inputError : ''}`}
           autoComplete="off"
@@ -163,7 +180,8 @@ export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({
             {filteredCountries.map((c) => (
               <li
                 key={c}
-                onClick={() => {
+                onMouseDown={(e) => {
+                  e.preventDefault();
                   setCountryQuery(c);
                   setShowDropdown(false);
                 }}
@@ -176,7 +194,6 @@ export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({
         )}
         <p className={styles.errorText}>{errors.country || ''}</p>
       </div>
-
       <Input
         id="unc-image"
         label="Avatar (PNG/JPEG)"
@@ -205,10 +222,32 @@ export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({
       </div>
 
       {passStrength && (
-        <div className={styles.strengthIndicator}>
+        <div className={styles.strengthContainer}>
           <p className={styles.strengthTitle}>
             Password complexity: {passStrength.score} / 4
           </p>
+          <ul className={styles.reqList}>
+            <li
+              className={`${styles.reqItem} ${passStrength.hasNumber ? styles.valid : styles.invalid}`}
+            >
+              {passStrength.hasNumber ? '✓' : '✗'} 1 number
+            </li>
+            <li
+              className={`${styles.reqItem} ${passStrength.hasUpper ? styles.valid : styles.invalid}`}
+            >
+              {passStrength.hasUpper ? '✓' : '✗'} 1 uppercase letter
+            </li>
+            <li
+              className={`${styles.reqItem} ${passStrength.hasLower ? styles.valid : styles.invalid}`}
+            >
+              {passStrength.hasLower ? '✓' : '✗'} 1 lowercase letter
+            </li>
+            <li
+              className={`${styles.reqItem} ${passStrength.hasSpecial ? styles.valid : styles.invalid}`}
+            >
+              {passStrength.hasSpecial ? '✓' : '✗'} 1 special character
+            </li>
+          </ul>
         </div>
       )}
 

@@ -31,10 +31,10 @@ export interface PasswordStrength {
 
 export const checkPasswordStrength = (password: string): PasswordStrength => {
   const checks = {
-    hasNumber: /[0-9]/.test(password),
+    hasNumber: /\d/.test(password),
     hasUpper: /[A-Z]/.test(password),
     hasLower: /[a-z]/.test(password),
-    hasSpecial: /[^A-Za-z0-9]/.test(password),
+    hasSpecial: /[^A-Za-z0-9\s]/.test(password),
   };
 
   const score = Object.values(checks).filter(Boolean).length;

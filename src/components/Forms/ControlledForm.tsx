@@ -49,9 +49,11 @@ export const ControlledForm = ({ onSuccess }: ControlledFormProps) => {
     }
   }, [passwordValue]);
 
-  const filteredCountries = countries.filter((c) =>
-    c.toLowerCase().includes(countryQuery.toLowerCase())
-  );
+  const filteredCountries = countries.includes(countryQuery)
+    ? countries
+    : countries.filter((c) =>
+        c.toLowerCase().includes(countryQuery.toLowerCase())
+      );
 
   const onSubmit = async (data: FormValues) => {
     let base64Image = '';
@@ -128,6 +130,7 @@ export const ControlledForm = ({ onSuccess }: ControlledFormProps) => {
             setValue('country', e.target.value, { shouldValidate: true });
           }}
           onFocus={() => setShowDropdown(true)}
+          onClick={() => setShowDropdown(true)}
           placeholder="Select from the list..."
           className={`${styles.autocompleteInput} ${errors.country ? styles.inputError : ''}`}
           autoComplete="off"
@@ -182,10 +185,32 @@ export const ControlledForm = ({ onSuccess }: ControlledFormProps) => {
       </div>
 
       {passStrength && (
-        <div className={styles.strengthIndicator}>
+        <div className={styles.strengthContainer}>
           <p className={styles.strengthTitle}>
             Password complexity: {passStrength.score} / 4
           </p>
+          <ul className={styles.reqList}>
+            <li
+              className={`${styles.reqItem} ${passStrength.hasNumber ? styles.valid : styles.invalid}`}
+            >
+              {passStrength.hasNumber ? '✓' : '✗'} 1 number
+            </li>
+            <li
+              className={`${styles.reqItem} ${passStrength.hasUpper ? styles.valid : styles.invalid}`}
+            >
+              {passStrength.hasUpper ? '✓' : '✗'} 1 uppercase letter
+            </li>
+            <li
+              className={`${styles.reqItem} ${passStrength.hasLower ? styles.valid : styles.invalid}`}
+            >
+              {passStrength.hasLower ? '✓' : '✗'} 1 lowercase letter
+            </li>
+            <li
+              className={`${styles.reqItem} ${passStrength.hasSpecial ? styles.valid : styles.invalid}`}
+            >
+              {passStrength.hasSpecial ? '✓' : '✗'} 1 special character
+            </li>
+          </ul>
         </div>
       )}
 
