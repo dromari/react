@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect } from 'react';
 import { usePokemonStore } from '../../store/usePokemonStore';
 import styles from './Flyout.module.css';
@@ -9,44 +11,36 @@ export default function Flyout() {
     if (selectedPokemons.length === 0) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        unselectAll();
-      }
+      if (e.key === 'Escape') unselectAll();
     };
 
     window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedPokemons, unselectAll]);
 
   if (selectedPokemons.length === 0) return null;
 
-  const handleDownloadCSV = () => {
-    const headers = 'Name,Description,Details URL\n';
+  const handleDownloadCSV = async () => {
+    try {
+      const response = await fetch('/api/download-csv', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: selectedPokemons }),
+      });
 
-    const rows = selectedPokemons
-      .map((p) => {
-        const cleanDesc = p.description.replace(/"/g, '""');
-        return `"${p.name}","${cleanDesc}","${p.detailsUrl}"`;
-      })
-      .join('\n');
+      if (!response.ok) throw new Error('Failed to generate CSV');
 
-    const blob = new Blob([headers + rows], {
-      type: 'text/csv;charset=utf-8;',
-    });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = url;
-
-    link.setAttribute('download', `${selectedPokemons.length}_items.csv`);
-    document.body.appendChild(link);
-    link.click();
-
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${selectedPokemons.length}_items.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('CSV Error:', error);
+    }
   };
 
   return (
@@ -59,7 +53,7 @@ export default function Flyout() {
           Unselect all
         </button>
         <button onClick={handleDownloadCSV} className={styles.downloadBtn}>
-          Download
+          Download CSV
         </button>
       </div>
     </div>

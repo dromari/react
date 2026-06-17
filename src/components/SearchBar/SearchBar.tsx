@@ -1,42 +1,46 @@
-import { useState, ChangeEvent, KeyboardEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './SearchBar.module.css';
-import { SearchBarProps } from '../../types/pokemonTypes';
+'use client';
 
-export default function SearchBar({ onSearch, initialValue }: SearchBarProps) {
-  const [inputValue, setInputValue] = useState(initialValue);
-  const navigate = useNavigate();
+import { useState, ChangeEvent } from 'react';
+import { useRouter } from '@/i18n/routing';
+import { useTranslations } from 'next-intl';
+import styles from './SearchBar.module.css';
+
+interface SearchBarProps {
+  initialQuery: string;
+}
+
+export default function SearchBar({ initialQuery }: SearchBarProps) {
+  const [inputValue, setInputValue] = useState(initialQuery);
+  const router = useRouter();
+  const t = useTranslations('Search');
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
-  const handleBtnClick = () => {
-    const trimmedValue = inputValue.trim();
-    onSearch(trimmedValue);
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = inputValue.trim().toLowerCase();
 
-    navigate('/?page=1');
-  };
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleBtnClick();
+    if (trimmed) {
+      router.push(`/?query=${encodeURIComponent(trimmed)}&page=1`);
+    } else {
+      router.push('/?page=1');
     }
   };
 
   return (
-    <div className={styles.topControls}>
+    <form onSubmit={handleSearchSubmit} className={styles.topControls}>
       <input
         type="text"
         className={styles.searchInput}
         value={inputValue}
         onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
-        placeholder="Search Pokemon..."
+        placeholder={t('placeholder')}
       />
-      <button className={styles.searchButton} onClick={handleBtnClick}>
-        Search
+      <button type="submit" className={styles.searchButton}>
+        {t('buttonText')}
       </button>
-    </div>
+    </form>
   );
 }

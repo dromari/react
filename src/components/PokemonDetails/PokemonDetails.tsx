@@ -1,43 +1,27 @@
-import { useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+'use client';
+
+import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './PokemonDetails.module.css';
-import { usePokemonDetail } from '../../hooks/usePokemonQueries';
+import { PokemonListItem } from '../../types/pokemonTypes';
 
-export default function PokemonDetails() {
-  const { detailsId } = useParams<{ detailsId: string }>();
-  const navigate = useNavigate();
+interface PokemonDetailsProps {
+  pokemon: PokemonListItem | null;
+  isLoading?: boolean;
+}
 
-  const [searchParams] = useSearchParams();
-  const pageParam = searchParams.get('page');
-  const isPageValid = pageParam === null || /^\d+$/.test(pageParam);
-
-  const { data, isLoading, isError } = usePokemonDetail(detailsId);
-
-  const pokemon =
-    data && 'pokemons' in data && data.pokemons.length > 0
-      ? data.pokemons[0]
-      : null;
-
-  useEffect(() => {
-    if (!isPageValid) {
-      navigate('/404', { replace: true });
-      return;
-    }
-
-    if (isError || (data && !pokemon)) {
-      navigate('/404', { replace: true });
-    }
-  }, [isError, data, pokemon, isPageValid, navigate]);
+export default function PokemonDetails({
+  pokemon,
+  isLoading,
+}: PokemonDetailsProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleClose = () => {
-    const currentParams = searchParams.toString();
-    const queryString = currentParams ? `?${currentParams}` : '';
-    navigate(`/${queryString}`);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('id');
+    router.push(`/?${params.toString()}`);
   };
-
-  if (!detailsId) {
-    return null;
-  }
 
   return (
     <div className={styles.detailsPanel}>
@@ -53,15 +37,22 @@ export default function PokemonDetails() {
         <div className={styles.loadingText}>LOADING DETAILS...</div>
       )}
 
-      {!isLoading && !isError && pokemon && (
+      {!isLoading && !pokemon && (
+        <div className={styles.loadingText}>POKEMON NOT FOUND</div>
+      )}
+
+      {!isLoading && pokemon && (
         <div className={styles.content}>
           <h2 className={styles.pokemonTitle}>{pokemon.name}</h2>
           <div className={styles.imageContainer}>
             {pokemon.image ? (
-              <img
+              <Image
                 src={pokemon.image}
                 alt={pokemon.name}
+                width={150}
+                height={150}
                 className={styles.sprite}
+                unoptimized={true}
               />
             ) : (
               <div className={styles.noImage}>NO PHOTO</div>

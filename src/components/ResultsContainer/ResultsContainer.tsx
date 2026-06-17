@@ -1,64 +1,39 @@
-import { useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+'use client';
+
+import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './Results.module.css';
-import { ResultsContainerProps } from '../../types/pokemonTypes';
+import { PokemonListItem } from '../../types/pokemonTypes';
 import { ITEMS_PER_PAGE } from '../../constants/pokemonConstants';
 import { usePokemonStore } from '../../store/usePokemonStore';
-import { usePokemons } from '../../hooks/usePokemonQueries';
+
+interface ResultsContainerProps {
+  pokemons: PokemonListItem[];
+  totalCount: number;
+  currentPage: number;
+}
 
 export default function ResultsContainer({
-  searchTerm,
+  pokemons,
+  totalCount,
+  currentPage,
 }: ResultsContainerProps) {
   const { selectedPokemons, togglePokemon } = usePokemonStore();
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-
-  const pageParam = searchParams.get('page');
-  const isPageValid = pageParam === null || /^\d+$/.test(pageParam);
-  const currentPage = isPageValid ? parseInt(pageParam || '1', 10) : 1;
-
-  const { data, isLoading, error } = usePokemons(
-    searchTerm,
-    currentPage,
-    ITEMS_PER_PAGE
-  );
-
-  const pokemons = data?.pokemons || [];
-  const totalCount = data?.count || 0;
-  const errorMessage = error?.message || null;
-
-  useEffect(() => {
-    if (!isPageValid) {
-      navigate('/404', { replace: true });
-      return;
-    }
-
-    if (data && 'pokemons' in data) {
-      const maxPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
-      const isSpecificSearch = !!(searchTerm && searchTerm.trim());
-
-      if (
-        !isSpecificSearch &&
-        ((currentPage > maxPages && maxPages > 0) || currentPage < 1) &&
-        searchTerm !== 'error'
-      ) {
-        navigate('/404', { replace: true });
-      }
-    }
-  }, [data, totalCount, currentPage, isPageValid, searchTerm, navigate]);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
   const handlePageChange = (pageNumber: number) => {
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set('page', pageNumber.toString());
-    navigate(`/?${newParams.toString()}`);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', pageNumber.toString());
+    router.push(`/?${params.toString()}`);
   };
 
-  const handleRowClick = (id: string | number) => {
-    const currentParams = searchParams.toString();
-    const queryString = currentParams ? `?${currentParams}` : '';
-    navigate(`/pokemon/${id}${queryString}`);
+  const handleRowClick = (name: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('id', name.toLowerCase());
+    router.push(`/?${params.toString()}`);
   };
 
   return (
@@ -71,24 +46,13 @@ export default function ResultsContainer({
       </div>
 
       <div className={styles.tableBody}>
-        {isLoading && <div className={styles.scanning}>SYSTEM SCANNING...</div>}
-
-        {errorMessage && !isLoading && (
-          <div className={styles.errorBanner}>
-            <h3>⚠️ DATABASE ERROR</h3>
-            <p>{errorMessage}</p>
-          </div>
-        )}
-
-        {!isLoading && !errorMessage && pokemons.length === 0 && (
+        {pokemons.length === 0 && (
           <div className={styles.errorBanner}>
             <h3>🔍 NO DATA FOUND</h3>
           </div>
         )}
 
-        {!isLoading &&
-          !errorMessage &&
-          pokemons.length > 0 &&
+        {pokemons.length > 0 &&
           pokemons.map((pokemon) => {
             const isSelected = selectedPokemons.some(
               (p) => p.name === pokemon.name
@@ -119,10 +83,13 @@ export default function ResultsContainer({
                 </div>
                 <div className={styles.cellImage}>
                   {pokemon.image ? (
-                    <img
+                    <Image
                       src={pokemon.image}
                       alt={pokemon.name}
+                      width={48}
+                      height={48}
                       className={styles.pokemonSprite}
+                      unoptimized={true}
                     />
                   ) : (
                     <div className={styles.noImage}>?</div>
@@ -138,7 +105,7 @@ export default function ResultsContainer({
           })}
       </div>
 
-      {!isLoading && !errorMessage && totalPages > 1 && (
+      {totalPages > 1 && (
         <div className={styles.paginationBlock}>
           <button
             disabled={currentPage === 1}

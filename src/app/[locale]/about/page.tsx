@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom';
-import styles from './About.module.css';
+import { Link } from '@/i18n/routing';
 
-export default function About() {
+import styles from '@/app/[locale]/about/about.module.css';
+
+export default function AboutPage() {
   return (
     <div className={styles.aboutWrapper}>
       <h2 className={styles.title}>About Pokédex</h2>
@@ -31,7 +32,7 @@ export default function About() {
         </p>
       </div>
 
-      <Link to="/" className={styles.backButton}>
+      <Link href="/" className={styles.backButton}>
         Back to App
       </Link>
     </div>
