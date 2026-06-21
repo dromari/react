@@ -1,7 +1,7 @@
 'use client';
 
 import { Link } from '@/i18n/routing';
-import styles from '@/app/[locale]/not-found/not-found.module.css';
+import styles from '@/app/[locale]/not-found.module.css';
 
 export default function NotFoundPage() {
   return (

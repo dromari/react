@@ -199,6 +199,15 @@
   flex-shrink: 0;
 }
 
+.errorBanner {
+  padding: 16px;
+  color: #ef4444;
+  background-color: #fee2e2;
+  border-radius: 4px;
+  margin-top: 16px;
+  font-family: monospace;
+}
+
 @media screen and (max-width: 768px) {
   .mainWrapper {
     margin: 10px;

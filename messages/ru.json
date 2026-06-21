@@ -1,6 +1,26 @@
 {
   "Search": {
-    "placeholder": "Поиск покемонов...",
+    "placeholder": "Поиск покемона...",
     "buttonText": "Найти"
+  },
+  "Navigation": {
+    "about": "О ПРОЕКТЕ",
+    "refresh": "ОБНОВИТЬ",
+    "test": "ТЕСТ"
+  },
+  "Theme": {
+    "light": "СВЕТЛАЯ",
+    "dark": "ТЕМНАЯ"
+  },
+  "Results": {
+    "select": "ВЫБОР",
+    "name": "ИМЯ",
+    "icon": "ИКОНКА",
+    "data": "ДАННЫЕ ПОКЕДЕКСА",
+    "noData": "🔍 ДАННЫЕ НЕ НАЙДЕНЫ",
+    "scanning": "СИСТЕМНОЕ СКАНИРОВАНИЕ...",
+    "prev": "◀ НАЗАД",
+    "next": "ВПЕРЕД ▶",
+    "pageInfo": "СТРАНИЦА {current} ИЗ {total}"
   }
 }

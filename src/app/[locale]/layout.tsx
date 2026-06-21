@@ -3,6 +3,7 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import ThemeProvider from '@/context/ThemeProvider';
+import '../globals.css';
 
 interface LayoutProps {
   children: React.ReactNode;
