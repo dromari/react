@@ -6,10 +6,15 @@ import PokemonDetails from '@/components/PokemonDetails/PokemonDetails';
 import { PokemonListItem } from '@/types/pokemonTypes';
 import { Link } from '@/i18n/routing';
 import ThemeButton from '@/components/Theme/ThemeButton';
+import ErrorButton from '@/components/ErrorButton/ErrorButton';
 import styles from './page.module.css';
+import { ITEMS_PER_PAGE } from '@/constants/pokemonConstants';
+export const dynamic = 'force-dynamic';
 
 import { getTranslations } from 'next-intl/server';
 import LanguageSelector from '@/components/LanguageSelector/LanguageSelector';
+import { notFound } from 'next/navigation';
+import ThemeContainer from '@/components/Theme/ThemeContainer';
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -17,16 +22,39 @@ interface PageProps {
 }
 
 export default async function SearchPage({ params, searchParams }: PageProps) {
-  await params;
+  const { locale } = await params;
   const { query = '', page = '1', id } = await searchParams;
-  const currentPage = parseInt(page, 10) || 1;
+  const tResults = await getTranslations({ locale, namespace: 'Results' });
 
-  const tNav = await getTranslations('Navigation');
+  const listTranslations = {
+    select: tResults('select'),
+    name: tResults('name'),
+    icon: tResults('icon'),
+    data: tResults('data'),
+    noData: tResults('noData'),
+    prev: tResults('prev'),
+    next: tResults('next'),
+    pageInfo: tResults('pageInfo'),
+  };
+
+  const currentPage = parseInt(page, 10);
+
+  if (Number.isNaN(currentPage) || currentPage < 1) {
+    notFound();
+  }
+
+  const tNav = await getTranslations({ locale, namespace: 'Navigation' });
+  const tTheme = await getTranslations({ locale, namespace: 'Theme' });
 
   const data = await fetchDetailedPokemons(query, currentPage);
   const isError = 'isError' in data;
   const pokemons = isError ? [] : data.pokemons;
   const totalCount = isError ? 0 : data.count;
+
+  const maxPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+  if (!isError && totalCount > 0 && currentPage > maxPages) {
+    notFound();
+  }
 
   let selectedPokemon: PokemonListItem | null = null;
   if (id) {
@@ -41,13 +69,13 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
   }
 
   return (
-    <div className={styles.mainWrapper}>
+    <ThemeContainer>
       <button className={styles.refreshButton} title={tNav('refresh')}>
         {tNav('refresh')}
       </button>
       <LanguageSelector />
 
-      <ThemeButton />
+      <ThemeButton lightText={tTheme('light')} darkText={tTheme('dark')} />
 
       <button className={styles.aboutButton}>
         <Link href="/about" className={styles.navLinkAbout}>
@@ -55,9 +83,7 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
         </Link>
       </button>
 
-      <button className={styles.errorButton} title={tNav('test')}>
-        {tNav('test')}
-      </button>
+      <ErrorButton buttonText={tNav('test')} />
 
       <div className={styles.smallLights}>
         <div className={styles.redLight} />
@@ -78,6 +104,8 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
               pokemons={pokemons}
               totalCount={totalCount}
               currentPage={currentPage}
+              currentQuery={query}
+              translations={listTranslations}
             />
           )}
         </div>
@@ -90,6 +118,6 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
       </div>
 
       <Flyout />
-    </div>
+    </ThemeContainer>
   );
 }

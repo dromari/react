@@ -4,7 +4,7 @@
     "buttonText": "Найти"
   },
   "Navigation": {
-    "about": "О ПРОЕКТЕ",
+    "about": "О НАС",
     "refresh": "ОБНОВИТЬ",
     "test": "ТЕСТ"
   },
@@ -22,5 +22,21 @@
     "prev": "◀ НАЗАД",
     "next": "ВПЕРЕД ▶",
     "pageInfo": "СТРАНИЦА {current} ИЗ {total}"
+  },
+  "Flyout": {
+    "selectedItems": "Выбрано элементов: {count}",
+    "unselectAll": "Сбросить выбор",
+    "download": "Скачать CSV"
+  },
+  "About": {
+    "title": "О Покедексе",
+    "author": "Автор:",
+    "course": "Курс:",
+    "backButton": "Вернуться к приложению"
+  },
+  "Errors": {
+    "title": "СИСТЕМНАЯ ОШИБКА",
+    "somethingWrong": "Что-то пошло не так...",
+    "reboot": "Перезагрузить систему"
   }
 }

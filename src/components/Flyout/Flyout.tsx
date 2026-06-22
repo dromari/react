@@ -1,11 +1,13 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { usePokemonStore } from '../../store/usePokemonStore';
 import styles from './Flyout.module.css';
 
 export default function Flyout() {
   const { selectedPokemons, unselectAll } = usePokemonStore();
+  const t = useTranslations('Flyout');
 
   useEffect(() => {
     if (selectedPokemons.length === 0) return;
@@ -46,14 +48,17 @@ export default function Flyout() {
   return (
     <div className={styles.flyoutSticky}>
       <div className={styles.info}>
-        Selected items: <strong>{selectedPokemons.length}</strong>
+        {t.rich('selectedItems', {
+          count: selectedPokemons.length,
+          strong: (chunks) => <strong>{chunks}</strong>,
+        })}
       </div>
       <div className={styles.actions}>
         <button onClick={unselectAll} className={styles.clearBtn}>
-          Unselect all
+          {t('unselectAll')}
         </button>
         <button onClick={handleDownloadCSV} className={styles.downloadBtn}>
-          Download CSV
+          {t('download')}
         </button>
       </div>
     </div>

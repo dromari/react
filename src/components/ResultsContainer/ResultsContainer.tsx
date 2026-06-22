@@ -1,81 +1,75 @@
-'use client';
-
 import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { Link } from '@/i18n/routing';
 import styles from './Results.module.css';
 import { PokemonListItem } from '../../types/pokemonTypes';
 import { ITEMS_PER_PAGE } from '../../constants/pokemonConstants';
-import { usePokemonStore } from '../../store/usePokemonStore';
+import PokemonCheckbox from './PokemonCheckbox';
 
 interface ResultsContainerProps {
   pokemons: PokemonListItem[];
   totalCount: number;
   currentPage: number;
+  currentQuery: string;
+
+  translations: {
+    select: string;
+    name: string;
+    icon: string;
+    data: string;
+    noData: string;
+    prev: string;
+    next: string;
+    pageInfo: string;
+  };
 }
 
 export default function ResultsContainer({
   pokemons,
   totalCount,
   currentPage,
+  currentQuery,
+  translations,
 }: ResultsContainerProps) {
-  const { selectedPokemons, togglePokemon } = usePokemonStore();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+  const queryParam = currentQuery
+    ? `&query=${encodeURIComponent(currentQuery)}`
+    : '';
 
-  const handlePageChange = (pageNumber: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', pageNumber.toString());
-    router.push(`/?${params.toString()}`);
-  };
-
-  const handleRowClick = (name: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('id', name.toLowerCase());
-    router.push(`/?${params.toString()}`);
+  const formatPageInfo = (template: string, current: number, total: number) => {
+    return template
+      .replace('{current}', current.toString())
+      .replace('{total}', total.toString());
   };
 
   return (
     <div className={styles.resultsArea}>
       <div className={styles.tableHeader}>
-        <div className={styles.cellCheckbox}>SELECT</div>
-        <div className={styles.cellName}>NAME</div>
-        <div className={styles.cellImage}>ICON</div>
-        <div className={styles.cellData}>POKEDEX DATA</div>
+        <div className={styles.cellCheckbox}>{translations.select}</div>
+        <div className={styles.cellName}>{translations.name}</div>
+        <div className={styles.cellImage}>{translations.icon}</div>
+        <div className={styles.cellData}>{translations.data}</div>
       </div>
 
       <div className={styles.tableBody}>
         {pokemons.length === 0 && (
           <div className={styles.errorBanner}>
-            <h3>🔍 NO DATA FOUND</h3>
+            <h3>{translations.noData}</h3>
           </div>
         )}
 
         {pokemons.length > 0 &&
           pokemons.map((pokemon) => {
-            const isSelected = selectedPokemons.some(
-              (p) => p.name === pokemon.name
-            );
+            const pokemonId = pokemon.name.toLowerCase();
 
             return (
-              <div
+              <Link
                 key={pokemon.name}
+                href={`/?page=${currentPage}${queryParam}&id=${pokemonId}`}
                 className={styles.tableRow}
-                onClick={() => handleRowClick(pokemon.name)}
-                style={{ cursor: 'pointer' }}
+                style={{ textDecoration: 'none', color: 'inherit' }}
               >
-                <div
-                  className={styles.cellCheckbox}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <input
-                    className={styles.checkbox}
-                    type="checkbox"
-                    checked={isSelected}
-                    onChange={() => togglePokemon(pokemon)}
-                    style={{ cursor: 'pointer' }}
-                  />
+                <div className={styles.cellCheckbox}>
+                  <PokemonCheckbox pokemon={pokemon} />
                 </div>
 
                 <div className={styles.cellName}>
@@ -100,30 +94,42 @@ export default function ResultsContainer({
                     {pokemon.description}
                   </span>
                 </div>
-              </div>
+              </Link>
             );
           })}
       </div>
 
       {totalPages > 1 && (
         <div className={styles.paginationBlock}>
-          <button
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange(currentPage - 1)}
-            className={styles.pageButton}
-          >
-            ◀ PREV
-          </button>
+          {currentPage > 1 ? (
+            <Link
+              href={`/?page=${currentPage - 1}${queryParam}`}
+              className={styles.pageButton}
+            >
+              {translations.prev}
+            </Link>
+          ) : (
+            <span className={`${styles.pageButton} ${styles.disabled}`}>
+              {translations.prev}
+            </span>
+          )}
+
           <span className={styles.pageInfo}>
-            PAGE {currentPage} OF {totalPages}
+            {formatPageInfo(translations.pageInfo, currentPage, totalPages)}
           </span>
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => handlePageChange(currentPage + 1)}
-            className={styles.pageButton}
-          >
-            NEXT ▶
-          </button>
+
+          {currentPage < totalPages ? (
+            <Link
+              href={`/?page=${currentPage + 1}${queryParam}`}
+              className={styles.pageButton}
+            >
+              {translations.next}
+            </Link>
+          ) : (
+            <span className={`${styles.pageButton} ${styles.disabled}`}>
+              {translations.next}
+            </span>
+          )}
         </div>
       )}
     </div>

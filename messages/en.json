@@ -22,5 +22,21 @@
     "prev": "◀ PREV",
     "next": "NEXT ▶",
     "pageInfo": "PAGE {current} OF {total}"
+  },
+  "Flyout": {
+    "selectedItems": "Selected items: {count}",
+    "unselectAll": "Unselect all",
+    "download": "Download CSV"
+  },
+  "About": {
+    "title": "About Pokédex",
+    "author": "Author:",
+    "course": "Course:",
+    "backButton": "Back to App"
+  },
+  "Errors": {
+    "title": "SYSTEM ERROR",
+    "somethingWrong": "Something went wrong...",
+    "reboot": "Reboot System"
   }
 }

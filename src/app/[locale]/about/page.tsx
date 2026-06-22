@@ -1,17 +1,24 @@
 import { Link } from '@/i18n/routing';
+import { getTranslations } from 'next-intl/server';
+import styles from './about.module.css';
 
-import styles from '@/app/[locale]/about/about.module.css';
+interface AboutProps {
+  params: Promise<{ locale: string }>;
+}
 
-export default function AboutPage() {
+export default async function AboutPage({ params }: AboutProps) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'About' });
+
   return (
     <div className={styles.aboutWrapper}>
-      <h2 className={styles.title}>About Pokédex</h2>
+      <h2 className={styles.title}>{t('title')}</h2>
 
       <div className={styles.infoBlock}>
         <p>
-          <span className={styles.label}>Author:</span>{' '}
+          <span className={styles.label}>{t('author')}</span>{' '}
           <a
-            href="https://github.com/dromari"
+            href="https://github.com"
             target="_blank"
             rel="noreferrer"
             className={styles.link}
@@ -20,7 +27,7 @@ export default function AboutPage() {
           </a>
         </p>
         <p>
-          <span className={styles.label}>Course:</span>{' '}
+          <span className={styles.label}>{t('course')}</span>{' '}
           <a
             href="https://rs.school"
             target="_blank"
@@ -33,7 +40,7 @@ export default function AboutPage() {
       </div>
 
       <Link href="/" className={styles.backButton}>
-        Back to App
+        {t('backButton')}
       </Link>
     </div>
   );

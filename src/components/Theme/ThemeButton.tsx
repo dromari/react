@@ -1,18 +1,19 @@
 'use client';
 
 import { useTheme } from '@/hooks/useTheme';
-import styles from '@/components/Theme/ThemeButton.module.css';
+import styles from '@/app/[locale]/page.module.css';
 
-export default function ThemeButton() {
+interface ThemeButtonProps {
+  lightText: string;
+  darkText: string;
+}
+
+export default function ThemeButton({ lightText, darkText }: ThemeButtonProps) {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <button
-      className={styles.themeButton}
-      onClick={toggleTheme}
-      title="Switch Theme"
-    >
-      {theme === 'light' ? 'DARK' : 'LIGHT'}
+    <button className={styles.themeButton} onClick={toggleTheme}>
+      {theme === 'dark' ? lightText : darkText}
     </button>
   );
 }
