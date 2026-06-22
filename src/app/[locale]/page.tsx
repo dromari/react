@@ -24,6 +24,16 @@ interface PageProps {
 export default async function SearchPage({ params, searchParams }: PageProps) {
   const { locale } = await params;
   const { query = '', page = '1', id } = await searchParams;
+
+  if (!/^\d+$/.test(page)) {
+    notFound();
+  }
+
+  const currentPage = parseInt(page, 10);
+  if (currentPage < 1) {
+    notFound();
+  }
+
   const tResults = await getTranslations({ locale, namespace: 'Results' });
 
   const listTranslations = {
@@ -36,12 +46,6 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
     next: tResults('next'),
     pageInfo: tResults('pageInfo'),
   };
-
-  const currentPage = parseInt(page, 10);
-
-  if (Number.isNaN(currentPage) || currentPage < 1) {
-    notFound();
-  }
 
   const tNav = await getTranslations({ locale, namespace: 'Navigation' });
   const tTheme = await getTranslations({ locale, namespace: 'Theme' });

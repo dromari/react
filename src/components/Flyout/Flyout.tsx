@@ -33,13 +33,19 @@ export default function Flyout() {
       if (!response.ok) throw new Error('Failed to generate CSV');
 
       const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${selectedPokemons.length}_items.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64Data = reader.result as string;
+
+        const downloadUrl = base64Data.replace(
+          /^data:text\/csv;base64,/,
+          'data:application/octet-stream;headers=Content-Disposition%3A%20attachment%3B%20filename%3Dpokemons.csv;base64,'
+        );
+
+        window.open(downloadUrl, '_self');
+      };
+      reader.readAsDataURL(blob);
     } catch (error) {
       console.error('CSV Error:', error);
     }

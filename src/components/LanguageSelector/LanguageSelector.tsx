@@ -21,8 +21,8 @@ export default function LanguageSelector() {
         onChange={handleLanguageChange}
         className={styles.selectInput}
       >
-        <option value="en">🇬🇧 EN</option>
-        <option value="ru">🇷🇺 RU</option>
+        <option value="en">EN</option>
+        <option value="ru">RU</option>
       </select>
     </div>
   );

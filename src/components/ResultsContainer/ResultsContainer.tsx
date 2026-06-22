@@ -105,6 +105,7 @@ export default function ResultsContainer({
             <Link
               href={`/?page=${currentPage - 1}${queryParam}`}
               className={styles.pageButton}
+              style={{ textDecoration: 'none' }}
             >
               {translations.prev}
             </Link>
@@ -122,6 +123,7 @@ export default function ResultsContainer({
             <Link
               href={`/?page=${currentPage + 1}${queryParam}`}
               className={styles.pageButton}
+              style={{ textDecoration: 'none' }}
             >
               {translations.next}
             </Link>

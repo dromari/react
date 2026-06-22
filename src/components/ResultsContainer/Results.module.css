@@ -128,6 +128,7 @@
 }
 
 .pageButton {
+  display: inline-block;
   background-color: #ffcb05;
   color: #3b4cca;
   border: 2px solid #3b4cca;
@@ -136,13 +137,24 @@
   font-weight: bold;
   cursor: pointer;
   border-radius: 4px;
+  text-decoration: none;
+  transition:
+    transform 0.1s ease,
+    background-color 0.2s ease;
 }
 
-.pageButton:disabled {
-  background-color: #555;
-  color: #888;
-  border-color: #444;
+.pageButton:not(.disabled):hover {
+  transform: scale(1.05);
+  background-color: #ffe066;
+}
+
+.pageButton.disabled {
+  background-color: #555555;
+  color: #888888;
+  border-color: #444444;
   cursor: not-allowed;
+  transform: none;
+  text-decoration: none;
 }
 
 .pageInfo {

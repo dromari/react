@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ReactNode, useEffect } from 'react';
+import { useState, ReactNode } from 'react';
 import { ThemeContext, Theme } from './ThemeContext';
 
 export default function ThemeProvider({ children }: { children: ReactNode }) {
@@ -26,10 +26,6 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
       return nextTheme;
     });
   };
-
-  useEffect(() => {
-    document.body.className = theme;
-  }, [theme]);
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
