@@ -37,6 +37,9 @@
   "Errors": {
     "title": "SYSTEM ERROR",
     "somethingWrong": "Something went wrong...",
-    "reboot": "Reboot System"
+    "reboot": "Reboot System",
+    "notFound": "Pokemon not found in database",
+    "badRequest": "Bad request to server",
+    "networkError": "Network connection error"
   }
 }

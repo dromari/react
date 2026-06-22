@@ -22,34 +22,11 @@ export default function Flyout() {
 
   if (selectedPokemons.length === 0) return null;
 
-  const handleDownloadCSV = async () => {
-    try {
-      const response = await fetch('/api/download-csv', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: selectedPokemons }),
-      });
+  const selectedIds = selectedPokemons
+    .map((p) => p.name.toLowerCase())
+    .join(',');
 
-      if (!response.ok) throw new Error('Failed to generate CSV');
-
-      const blob = await response.blob();
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64Data = reader.result as string;
-
-        const downloadUrl = base64Data.replace(
-          /^data:text\/csv;base64,/,
-          'data:application/octet-stream;headers=Content-Disposition%3A%20attachment%3B%20filename%3Dpokemons.csv;base64,'
-        );
-
-        window.open(downloadUrl, '_self');
-      };
-      reader.readAsDataURL(blob);
-    } catch (error) {
-      console.error('CSV Error:', error);
-    }
-  };
+  const downloadUrl = `/api/download-csv?ids=${encodeURIComponent(selectedIds)}&count=${selectedPokemons.length}`;
 
   return (
     <div className={styles.flyoutSticky}>
@@ -63,9 +40,13 @@ export default function Flyout() {
         <button onClick={unselectAll} className={styles.clearBtn}>
           {t('unselectAll')}
         </button>
-        <button onClick={handleDownloadCSV} className={styles.downloadBtn}>
+        <a
+          href={downloadUrl}
+          className={styles.downloadBtn}
+          style={{ textDecoration: 'none' }}
+        >
           {t('download')}
-        </button>
+        </a>
       </div>
     </div>
   );

@@ -10,7 +10,6 @@ interface ResultsContainerProps {
   totalCount: number;
   currentPage: number;
   currentQuery: string;
-
   translations: {
     select: string;
     name: string;
@@ -21,6 +20,8 @@ interface ResultsContainerProps {
     next: string;
     pageInfo: string;
   };
+  isError?: boolean;
+  errorMessage?: string;
 }
 
 export default function ResultsContainer({
@@ -29,6 +30,8 @@ export default function ResultsContainer({
   currentPage,
   currentQuery,
   translations,
+  isError = false,
+  errorMessage = '',
 }: ResultsContainerProps) {
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
   const queryParam = currentQuery
@@ -51,13 +54,21 @@ export default function ResultsContainer({
       </div>
 
       <div className={styles.tableBody}>
-        {pokemons.length === 0 && (
+        {isError && (
+          <div className={styles.errorCentered}>
+            <div className={styles.errorIcon}>⚠</div>
+            <h3>{errorMessage}</h3>
+          </div>
+        )}
+
+        {!isError && pokemons.length === 0 && (
           <div className={styles.errorBanner}>
             <h3>{translations.noData}</h3>
           </div>
         )}
 
-        {pokemons.length > 0 &&
+        {!isError &&
+          pokemons.length > 0 &&
           pokemons.map((pokemon) => {
             const pokemonId = pokemon.name.toLowerCase();
 
@@ -99,13 +110,12 @@ export default function ResultsContainer({
           })}
       </div>
 
-      {totalPages > 1 && (
+      {!isError && totalPages > 1 && (
         <div className={styles.paginationBlock}>
           {currentPage > 1 ? (
             <Link
               href={`/?page=${currentPage - 1}${queryParam}`}
               className={styles.pageButton}
-              style={{ textDecoration: 'none' }}
             >
               {translations.prev}
             </Link>
@@ -123,7 +133,6 @@ export default function ResultsContainer({
             <Link
               href={`/?page=${currentPage + 1}${queryParam}`}
               className={styles.pageButton}
-              style={{ textDecoration: 'none' }}
             >
               {translations.next}
             </Link>

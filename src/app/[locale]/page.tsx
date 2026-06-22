@@ -49,6 +49,7 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
 
   const tNav = await getTranslations({ locale, namespace: 'Navigation' });
   const tTheme = await getTranslations({ locale, namespace: 'Theme' });
+  const tErrors = await getTranslations({ locale, namespace: 'Errors' });
 
   const data = await fetchDetailedPokemons(query, currentPage);
   const isError = 'isError' in data;
@@ -58,6 +59,17 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
   const maxPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
   if (!isError && totalCount > 0 && currentPage > maxPages) {
     notFound();
+  }
+
+  let localizedErrorMessage = '';
+  if (isError && 'message' in data) {
+    if (data.message.includes('not found')) {
+      localizedErrorMessage = tErrors('notFound');
+    } else if (data.message.includes('Network')) {
+      localizedErrorMessage = tErrors('networkError');
+    } else {
+      localizedErrorMessage = tErrors('badRequest');
+    }
   }
 
   let selectedPokemon: PokemonListItem | null = null;
@@ -101,17 +113,15 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
         <div className={id ? styles.leftColumn : styles.leftColumnFull}>
           <SearchBar initialQuery={query} />
 
-          {isError ? (
-            <div className={styles.errorBanner}>{data.message}</div>
-          ) : (
-            <ResultsContainer
-              pokemons={pokemons}
-              totalCount={totalCount}
-              currentPage={currentPage}
-              currentQuery={query}
-              translations={listTranslations}
-            />
-          )}
+          <ResultsContainer
+            pokemons={pokemons}
+            totalCount={totalCount}
+            currentPage={currentPage}
+            currentQuery={query}
+            translations={listTranslations}
+            isError={isError}
+            errorMessage={localizedErrorMessage}
+          />
         </div>
 
         {id && (
