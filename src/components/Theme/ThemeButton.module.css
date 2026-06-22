@@ -1,0 +1,45 @@
+.themeButton {
+  width: 70px;
+  height: 30px;
+  position: absolute;
+  top: 20px;
+  z-index: 10;
+  background-color: #ffcb05;
+  border: 2px solid #3b4cca;
+  padding: 5px 12px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  cursor: pointer;
+  right: 150px;
+  color: #3b4cca;
+  border-radius: 4px;
+}
+
+.themeButton:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s;
+}
+
+.mainWrapper.darkTheme .themeButton {
+  background-color: #3b4cca;
+  border-color: #ffcb05;
+  color: #ffcb05;
+}
+
+@media screen and (max-width: 768px) {
+  .themeButton {
+    right: 95px;
+    top: 15px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .themeButton {
+    font-size: 0.7rem;
+    padding: 5px 4px;
+    height: 28px;
+    top: 85px;
+    width: 55px;
+    right: 70px;
+  }
+}

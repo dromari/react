@@ -1,0 +1,45 @@
+{
+  "Search": {
+    "placeholder": "Поиск покемона...",
+    "buttonText": "Найти"
+  },
+  "Navigation": {
+    "about": "О НАС",
+    "refresh": "ОБНОВИТЬ",
+    "test": "ТЕСТ"
+  },
+  "Theme": {
+    "light": "СВЕТЛАЯ",
+    "dark": "ТЕМНАЯ"
+  },
+  "Results": {
+    "select": "ВЫБОР",
+    "name": "ИМЯ",
+    "icon": "ИКОНКА",
+    "data": "ДАННЫЕ ПОКЕДЕКСА",
+    "noData": "🔍 ДАННЫЕ НЕ НАЙДЕНЫ",
+    "scanning": "СИСТЕМНОЕ СКАНИРОВАНИЕ...",
+    "prev": "◀ НАЗАД",
+    "next": "ВПЕРЕД ▶",
+    "pageInfo": "СТРАНИЦА {current} ИЗ {total}"
+  },
+  "Flyout": {
+    "selectedItems": "Выбрано элементов: {count}",
+    "unselectAll": "Сбросить выбор",
+    "download": "Скачать CSV"
+  },
+  "About": {
+    "title": "О Покедексе",
+    "author": "Автор:",
+    "course": "Курс:",
+    "backButton": "Вернуться к приложению"
+  },
+  "Errors": {
+    "title": "СИСТЕМНАЯ ОШИБКА",
+    "somethingWrong": "Что-то пошло не так...",
+    "reboot": "Перезагрузить систему",
+    "notFound": "Покемон не найден в базе данных",
+    "badRequest": "Неверный запрос к серверу",
+    "networkError": "Ошибка сетевого соединения"
+  }
+}

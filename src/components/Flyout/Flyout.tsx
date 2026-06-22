@@ -1,66 +1,52 @@
+'use client';
+
 import { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { usePokemonStore } from '../../store/usePokemonStore';
 import styles from './Flyout.module.css';
 
 export default function Flyout() {
   const { selectedPokemons, unselectAll } = usePokemonStore();
+  const t = useTranslations('Flyout');
 
   useEffect(() => {
     if (selectedPokemons.length === 0) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        unselectAll();
-      }
+      if (e.key === 'Escape') unselectAll();
     };
 
     window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedPokemons, unselectAll]);
 
   if (selectedPokemons.length === 0) return null;
 
-  const handleDownloadCSV = () => {
-    const headers = 'Name,Description,Details URL\n';
+  const selectedIds = selectedPokemons
+    .map((p) => p.name.toLowerCase())
+    .join(',');
 
-    const rows = selectedPokemons
-      .map((p) => {
-        const cleanDesc = p.description.replace(/"/g, '""');
-        return `"${p.name}","${cleanDesc}","${p.detailsUrl}"`;
-      })
-      .join('\n');
-
-    const blob = new Blob([headers + rows], {
-      type: 'text/csv;charset=utf-8;',
-    });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = url;
-
-    link.setAttribute('download', `${selectedPokemons.length}_items.csv`);
-    document.body.appendChild(link);
-    link.click();
-
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
+  const downloadUrl = `/api/download-csv?ids=${encodeURIComponent(selectedIds)}&count=${selectedPokemons.length}`;
 
   return (
     <div className={styles.flyoutSticky}>
       <div className={styles.info}>
-        Selected items: <strong>{selectedPokemons.length}</strong>
+        {t.rich('selectedItems', {
+          count: selectedPokemons.length,
+          strong: (chunks) => <strong>{chunks}</strong>,
+        })}
       </div>
       <div className={styles.actions}>
         <button onClick={unselectAll} className={styles.clearBtn}>
-          Unselect all
+          {t('unselectAll')}
         </button>
-        <button onClick={handleDownloadCSV} className={styles.downloadBtn}>
-          Download
-        </button>
+        <a
+          href={downloadUrl}
+          className={styles.downloadBtn}
+          style={{ textDecoration: 'none' }}
+        >
+          {t('download')}
+        </a>
       </div>
     </div>
   );

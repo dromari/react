@@ -1,0 +1,45 @@
+{
+  "Search": {
+    "placeholder": "Search Pokemon...",
+    "buttonText": "Search"
+  },
+  "Navigation": {
+    "about": "ABOUT",
+    "refresh": "REFRESH",
+    "test": "TEST"
+  },
+  "Theme": {
+    "light": "LIGHT",
+    "dark": "DARK"
+  },
+  "Results": {
+    "select": "SELECT",
+    "name": "NAME",
+    "icon": "ICON",
+    "data": "POKEDEX DATA",
+    "noData": "🔍 NO DATA FOUND",
+    "scanning": "SYSTEM SCANNING...",
+    "prev": "◀ PREV",
+    "next": "NEXT ▶",
+    "pageInfo": "PAGE {current} OF {total}"
+  },
+  "Flyout": {
+    "selectedItems": "Selected items: {count}",
+    "unselectAll": "Unselect all",
+    "download": "Download CSV"
+  },
+  "About": {
+    "title": "About Pokédex",
+    "author": "Author:",
+    "course": "Course:",
+    "backButton": "Back to App"
+  },
+  "Errors": {
+    "title": "SYSTEM ERROR",
+    "somethingWrong": "Something went wrong...",
+    "reboot": "Reboot System",
+    "notFound": "Pokemon not found in database",
+    "badRequest": "Bad request to server",
+    "networkError": "Network connection error"
+  }
+}

@@ -1,117 +1,86 @@
-import { useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import Image from 'next/image';
+import { Link } from '@/i18n/routing';
 import styles from './Results.module.css';
-import { ResultsContainerProps } from '../../types/pokemonTypes';
+import { PokemonListItem } from '../../types/pokemonTypes';
 import { ITEMS_PER_PAGE } from '../../constants/pokemonConstants';
-import { usePokemonStore } from '../../store/usePokemonStore';
-import { usePokemons } from '../../hooks/usePokemonQueries';
+import PokemonCheckbox from './PokemonCheckbox';
+
+interface ResultsContainerProps {
+  pokemons: PokemonListItem[];
+  totalCount: number;
+  currentPage: number;
+  currentQuery: string;
+  translations: {
+    select: string;
+    name: string;
+    icon: string;
+    data: string;
+    noData: string;
+    prev: string;
+    next: string;
+    pageInfo: string;
+  };
+  isError?: boolean;
+  errorMessage?: string;
+}
 
 export default function ResultsContainer({
-  searchTerm,
+  pokemons,
+  totalCount,
+  currentPage,
+  currentQuery,
+  translations,
+  isError = false,
+  errorMessage = '',
 }: ResultsContainerProps) {
-  const { selectedPokemons, togglePokemon } = usePokemonStore();
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-
-  const pageParam = searchParams.get('page');
-  const isPageValid = pageParam === null || /^\d+$/.test(pageParam);
-  const currentPage = isPageValid ? parseInt(pageParam || '1', 10) : 1;
-
-  const { data, isLoading, error } = usePokemons(
-    searchTerm,
-    currentPage,
-    ITEMS_PER_PAGE
-  );
-
-  const pokemons = data?.pokemons || [];
-  const totalCount = data?.count || 0;
-  const errorMessage = error?.message || null;
-
-  useEffect(() => {
-    if (!isPageValid) {
-      navigate('/404', { replace: true });
-      return;
-    }
-
-    if (data && 'pokemons' in data) {
-      const maxPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
-      const isSpecificSearch = !!(searchTerm && searchTerm.trim());
-
-      if (
-        !isSpecificSearch &&
-        ((currentPage > maxPages && maxPages > 0) || currentPage < 1) &&
-        searchTerm !== 'error'
-      ) {
-        navigate('/404', { replace: true });
-      }
-    }
-  }, [data, totalCount, currentPage, isPageValid, searchTerm, navigate]);
-
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+  const queryParam = currentQuery
+    ? `&query=${encodeURIComponent(currentQuery)}`
+    : '';
 
-  const handlePageChange = (pageNumber: number) => {
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set('page', pageNumber.toString());
-    navigate(`/?${newParams.toString()}`);
-  };
-
-  const handleRowClick = (id: string | number) => {
-    const currentParams = searchParams.toString();
-    const queryString = currentParams ? `?${currentParams}` : '';
-    navigate(`/pokemon/${id}${queryString}`);
+  const formatPageInfo = (template: string, current: number, total: number) => {
+    return template
+      .replace('{current}', current.toString())
+      .replace('{total}', total.toString());
   };
 
   return (
     <div className={styles.resultsArea}>
       <div className={styles.tableHeader}>
-        <div className={styles.cellCheckbox}>SELECT</div>
-        <div className={styles.cellName}>NAME</div>
-        <div className={styles.cellImage}>ICON</div>
-        <div className={styles.cellData}>POKEDEX DATA</div>
+        <div className={styles.cellCheckbox}>{translations.select}</div>
+        <div className={styles.cellName}>{translations.name}</div>
+        <div className={styles.cellImage}>{translations.icon}</div>
+        <div className={styles.cellData}>{translations.data}</div>
       </div>
 
       <div className={styles.tableBody}>
-        {isLoading && <div className={styles.scanning}>SYSTEM SCANNING...</div>}
-
-        {errorMessage && !isLoading && (
-          <div className={styles.errorBanner}>
-            <h3>⚠️ DATABASE ERROR</h3>
-            <p>{errorMessage}</p>
+        {isError && (
+          <div className={styles.errorCentered}>
+            <div className={styles.errorIcon}>⚠</div>
+            <h3>{errorMessage}</h3>
           </div>
         )}
 
-        {!isLoading && !errorMessage && pokemons.length === 0 && (
+        {!isError && pokemons.length === 0 && (
           <div className={styles.errorBanner}>
-            <h3>🔍 NO DATA FOUND</h3>
+            <h3>{translations.noData}</h3>
           </div>
         )}
 
-        {!isLoading &&
-          !errorMessage &&
+        {!isError &&
           pokemons.length > 0 &&
           pokemons.map((pokemon) => {
-            const isSelected = selectedPokemons.some(
-              (p) => p.name === pokemon.name
-            );
+            const pokemonId = pokemon.name.toLowerCase();
 
             return (
-              <div
+              <Link
                 key={pokemon.name}
+                href={`/?page=${currentPage}${queryParam}&id=${pokemonId}`}
                 className={styles.tableRow}
-                onClick={() => handleRowClick(pokemon.name)}
-                style={{ cursor: 'pointer' }}
+                style={{ textDecoration: 'none', color: 'inherit' }}
               >
-                <div
-                  className={styles.cellCheckbox}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <input
-                    className={styles.checkbox}
-                    type="checkbox"
-                    checked={isSelected}
-                    onChange={() => togglePokemon(pokemon)}
-                    style={{ cursor: 'pointer' }}
-                  />
+                <div className={styles.cellCheckbox}>
+                  <PokemonCheckbox pokemon={pokemon} />
                 </div>
 
                 <div className={styles.cellName}>
@@ -119,10 +88,13 @@ export default function ResultsContainer({
                 </div>
                 <div className={styles.cellImage}>
                   {pokemon.image ? (
-                    <img
+                    <Image
                       src={pokemon.image}
                       alt={pokemon.name}
+                      width={48}
+                      height={48}
                       className={styles.pokemonSprite}
+                      unoptimized={true}
                     />
                   ) : (
                     <div className={styles.noImage}>?</div>
@@ -133,30 +105,42 @@ export default function ResultsContainer({
                     {pokemon.description}
                   </span>
                 </div>
-              </div>
+              </Link>
             );
           })}
       </div>
 
-      {!isLoading && !errorMessage && totalPages > 1 && (
+      {!isError && totalPages > 1 && (
         <div className={styles.paginationBlock}>
-          <button
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange(currentPage - 1)}
-            className={styles.pageButton}
-          >
-            ◀ PREV
-          </button>
+          {currentPage > 1 ? (
+            <Link
+              href={`/?page=${currentPage - 1}${queryParam}`}
+              className={styles.pageButton}
+            >
+              {translations.prev}
+            </Link>
+          ) : (
+            <span className={`${styles.pageButton} ${styles.disabled}`}>
+              {translations.prev}
+            </span>
+          )}
+
           <span className={styles.pageInfo}>
-            PAGE {currentPage} OF {totalPages}
+            {formatPageInfo(translations.pageInfo, currentPage, totalPages)}
           </span>
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => handlePageChange(currentPage + 1)}
-            className={styles.pageButton}
-          >
-            NEXT ▶
-          </button>
+
+          {currentPage < totalPages ? (
+            <Link
+              href={`/?page=${currentPage + 1}${queryParam}`}
+              className={styles.pageButton}
+            >
+              {translations.next}
+            </Link>
+          ) : (
+            <span className={`${styles.pageButton} ${styles.disabled}`}>
+              {translations.next}
+            </span>
+          )}
         </div>
       )}
     </div>

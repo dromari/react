@@ -6,9 +6,12 @@
   border: 8px solid #333;
   border-radius: 5px;
   height: 600px;
+  width: 100%;
   font-family: 'Courier New', Courier, monospace;
   color: #222;
   overflow: hidden;
+  box-sizing: border-box;
+  margin-top: 20px;
 }
 
 .tableHeader {
@@ -128,6 +131,7 @@
 }
 
 .pageButton {
+  display: inline-block;
   background-color: #ffcb05;
   color: #3b4cca;
   border: 2px solid #3b4cca;
@@ -136,13 +140,24 @@
   font-weight: bold;
   cursor: pointer;
   border-radius: 4px;
+  text-decoration: none;
+  transition:
+    transform 0.1s ease,
+    background-color 0.2s ease;
 }
 
-.pageButton:disabled {
-  background-color: #555;
-  color: #888;
-  border-color: #444;
+.pageButton:not(.disabled):hover {
+  transform: scale(1.05);
+  background-color: #ffe066;
+}
+
+.pageButton.disabled {
+  background-color: #555555;
+  color: #888888;
+  border-color: #444444;
   cursor: not-allowed;
+  transform: none;
+  text-decoration: none;
 }
 
 .pageInfo {
@@ -161,6 +176,24 @@
 .checkbox {
   width: 20px;
   height: 20px;
+}
+
+.errorCentered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  padding: 20px;
+  text-align: center;
+  color: #721c24;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.errorIcon {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  animation: pulse 1.5s infinite;
 }
 
 @media screen and (max-width: 768px) {

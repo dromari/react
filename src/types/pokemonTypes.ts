@@ -2,6 +2,7 @@ export interface PokemonListItem {
   name: string;
   description: string;
   image: string;
+  detailsUrl?: string;
 }
 
 export interface PaginatedPokemonResponse {
@@ -20,10 +21,11 @@ export interface SelectedPokemon extends PokemonListItem {
 }
 
 export interface ResultsContainerProps {
-  searchTerm: string;
+  pokemons: PokemonListItem[];
+  totalCount: number;
+  currentPage: number;
 }
 
 export interface SearchBarProps {
-  onSearch: (term: string) => void;
-  initialValue: string;
+  initialQuery: string;
 }
